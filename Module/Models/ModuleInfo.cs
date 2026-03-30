@@ -35,7 +35,7 @@ public sealed class ModuleInfo
 
     static ModuleInfo()
     {
-        using var cancelSource = HTTPClientHelper.AcquireSharedCancellation();
+        using var cancelSource = HTTPClientHelper.Instance().AcquireSharedCancellation();
         var token = cancelSource.Token;
         Task.Run
         (
@@ -43,7 +43,7 @@ public sealed class ModuleInfo
             {
                 try
                 {
-                    var text = await HTTPClientHelper.Get().GetStringAsync(AUTHOR_SUPPORT_LINKS_BASE_URL, token);
+                    var text = await HTTPClientHelper.Instance().Get().GetStringAsync(AUTHOR_SUPPORT_LINKS_BASE_URL, token);
                     AuthorSupportLinks = JsonConvert.DeserializeObject<Dictionary<string, LinkInfo>>(text) ?? new();
                 }
                 catch
