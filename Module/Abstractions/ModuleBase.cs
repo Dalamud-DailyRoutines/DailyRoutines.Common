@@ -279,13 +279,13 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
             ArgumentNullException.ThrowIfNull(config);
             
             ImGui.SetClipboardText(config.ToJSONBase64());
-            NotifyHelper.NotificationSuccess(host.GetLoc("DailyModuleBase-Exported"));
+            NotifyHelper.Instance().NotificationSuccess(host.GetLoc("DailyModuleBase-Exported"));
         }
         catch (Exception ex)
         {
             var errorText = host.GetLoc("DailyModuleBase-ExportError");
             DLog.Error(errorText, ex);
-            NotifyHelper.NotificationError(errorText);
+            NotifyHelper.Instance().NotificationError(errorText);
         }
     }
 
@@ -298,7 +298,7 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
             var config = ImGui.GetClipboardText().FromJSONBase64<T>();
 
             if (config != null)
-                NotifyHelper.NotificationSuccess(host.GetLoc("DailyModuleBase-Exported"));
+                NotifyHelper.Instance().NotificationSuccess(host.GetLoc("DailyModuleBase-Exported"));
 
             return config;
         }
@@ -306,7 +306,7 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
         {
             var errorText = host.GetLoc("DailyModuleBase-ImportError");
             DLog.Error(errorText, ex);
-            NotifyHelper.NotificationError(errorText);
+            NotifyHelper.Instance().NotificationError(errorText);
         }
 
         return null;
