@@ -1,3 +1,3 @@
-﻿namespace DailyRoutines.Common.RemoteInteraction.Abstractions;
+namespace DailyRoutines.Common.RemoteInteraction.Abstractions;
 
 public abstract class RemoteInteractionBase;

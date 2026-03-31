@@ -1,4 +1,4 @@
-﻿namespace DailyRoutines.Common.RemoteInteraction.Models;
+namespace DailyRoutines.Common.RemoteInteraction.Models;
 
 public readonly record struct RemoteCommandSnapshot<TResult>
 (

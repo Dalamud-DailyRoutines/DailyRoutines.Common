@@ -1,4 +1,4 @@
-﻿using DailyRoutines.Common.Info;
+using DailyRoutines.Common.Info;
 using Dalamud.Game.Text.SeStringHandling;
 
 namespace DailyRoutines.Common.Extensions;

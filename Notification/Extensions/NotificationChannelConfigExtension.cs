@@ -1,4 +1,4 @@
-﻿using DailyRoutines.Common.Notification.Abstractions;
+using DailyRoutines.Common.Notification.Abstractions;
 
 namespace DailyRoutines.Common.Notification.Extensions;
 

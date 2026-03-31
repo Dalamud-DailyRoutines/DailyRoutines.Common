@@ -1,4 +1,4 @@
-﻿namespace DailyRoutines.Common.RemoteInteraction.Enums;
+namespace DailyRoutines.Common.RemoteInteraction.Enums;
 
 public enum RemoteSnapshotStatus
 {

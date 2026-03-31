@@ -1,4 +1,4 @@
-﻿using DailyRoutines.Common.DataUploader.Abstractions;
+using DailyRoutines.Common.DataUploader.Abstractions;
 
 namespace DailyRoutines.Common.DataUploader.Extensions;
 

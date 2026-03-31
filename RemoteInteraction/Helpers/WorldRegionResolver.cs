@@ -1,4 +1,4 @@
-﻿using DailyRoutines.Common.RemoteInteraction.Enums;
+using DailyRoutines.Common.RemoteInteraction.Enums;
 
 namespace DailyRoutines.Common.RemoteInteraction.Helpers;
 

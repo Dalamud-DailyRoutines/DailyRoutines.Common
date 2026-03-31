@@ -1,4 +1,4 @@
-﻿namespace DailyRoutines.Common.RemoteInteraction.Abstractions;
+namespace DailyRoutines.Common.RemoteInteraction.Abstractions;
 
 public interface IRemoteQueryHandler<in TKey, TValue>
     where TKey : notnull

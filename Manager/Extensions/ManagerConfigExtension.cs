@@ -1,4 +1,4 @@
-﻿using DailyRoutines.Common.Manager.Abstractions;
+using DailyRoutines.Common.Manager.Abstractions;
 
 namespace DailyRoutines.Common.Manager.Extensions;
 

@@ -1,4 +1,4 @@
-﻿namespace DailyRoutines.Common.RemoteInteraction.Abstractions;
+namespace DailyRoutines.Common.RemoteInteraction.Abstractions;
 
 public interface IRemoteCommandHandler<in TArgs, TResult>
 {

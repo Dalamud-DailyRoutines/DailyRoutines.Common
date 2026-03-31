@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
