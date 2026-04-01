@@ -9,12 +9,7 @@ public class ConflictKey
     public VirtualKey Keyboard
     {
         get;
-        set
-        {
-            if (DService.Instance().KeyState.GetValidVirtualKeys().Contains(field))
-                field = value;
-            field = VirtualKey.SHIFT;
-        }
+        set => field = DService.Instance().KeyState.GetValidVirtualKeys().Contains(field) ? value : VirtualKey.SHIFT;
     } = VirtualKey.SHIFT;
 
     public GamepadButtons Gamepad  { get; set; } = GamepadButtons.South | GamepadButtons.West;
