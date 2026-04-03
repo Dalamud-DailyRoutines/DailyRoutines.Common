@@ -26,7 +26,7 @@ public sealed class ModuleInfo
                                                     : string.Empty)
                                    .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
 
-    public override string ToString() => $"{Title}_{Description}_{Category}_{string.Join(',', Author)}";
+    public override string ToString() => Title;
 
     private const string AUTHOR_SUPPORT_LINKS_BASE_URL =
         "https://gh.atmoomen.top/raw.githubusercontent.com/Dalamud-DailyRoutines/DailyRoutines.Info/master/assets/AuthorSupportLinks.json";
@@ -73,4 +73,3 @@ public sealed class ModuleInfo
         }
     }
 }
-
