@@ -1,10 +1,17 @@
-using System;
-using System.IO;
+using DailyRoutines.Common.Runtime.Hosts;
 using Newtonsoft.Json;
 using OmenTools.Dalamud;
 using OmenTools.OmenService;
 
 namespace DailyRoutines.Common.Manager.Abstractions;
+
+public abstract class ManagerBase<T> : ManagerBase where T : ManagerBase<T>
+{
+    public static T Instance() =>
+        ManagerHost.Current.Get<T>() is { IsInitialized: true, IsDisposed: false } manager
+            ? manager
+            : throw new InvalidOperationException($"管理器 {typeof(T).Name} 尚未注册或初始化");
+}
 
 public abstract class ManagerBase
 {
