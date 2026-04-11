@@ -16,7 +16,6 @@ global using INPC = OmenTools.Dalamud.Services.ObjectTable.Abstractions.ObjectKi
 global using IBattleChara = OmenTools.Dalamud.Services.ObjectTable.Abstractions.ObjectKinds.IBattleChara;
 global using IBattleNPC = OmenTools.Dalamud.Services.ObjectTable.Abstractions.ObjectKinds.IBattleNPC;
 global using StatusList = OmenTools.Dalamud.Services.StatusList.Implementations.StatusList;
-
 global using static OmenTools.Global.Globals;
 global using static OmenTools.Info.Game.Data.Addons;
 
@@ -30,6 +29,7 @@ global using Dalamud.Bindings.ImPlot;
 global using Dalamud.Interface;
 global using Dalamud.Interface.Utility.Raii;
 global using Dalamud.Game;
+global using Dalamud.Plugin.Services;
 
 #endregion
 
