@@ -6,11 +6,9 @@ namespace DailyRoutines.Common.Module;
 
 public sealed class ModuleSearcher
 {
-    private static readonly SearchWeight TitleWeight      = new(2_400, 2_000, 1_880, 1_650, 1_520, 1_760);
-    private static readonly SearchWeight NameWeight       = new(2_260, 1_920, 1_760, 1_560, 1_420, 1_620);
-    private static readonly SearchWeight IdentifierWeight = new(2_120, 1_820, 1_680, 1_480, 1_360, 1_520);
-    private static readonly SearchWeight CategoryWeight   = new(1_680, 1_420, 1_320, 1_180, 1_060, 1_180);
-    private static readonly SearchWeight MetaWeight       = new(1_320, 1_120, 1_020, 900, 820, 980);
+    private static readonly SearchWeight TitleWeight = new(2_400, 2_000, 1_880, 1_650, 1_520, 1_760);
+    private static readonly SearchWeight NameWeight  = new(2_260, 1_920, 1_760, 1_560, 1_420, 1_620);
+    private static readonly SearchWeight MetaWeight  = new(1_320, 1_120, 1_020, 900, 820, 980);
 
     private readonly SearchEntry[] entries;
 
@@ -19,8 +17,7 @@ public sealed class ModuleSearcher
 
     public ModuleSearcher
     (
-        IEnumerable<ModuleBase> modules,
-        Func<ModuleBase, string?>? categoryTextSelector = null,
+        IEnumerable<ModuleBase>                  modules,
         Func<ModuleBase, IEnumerable<string?>?>? extraSegmentsSelector = null
     )
     {
@@ -36,7 +33,6 @@ public sealed class ModuleSearcher
                 CreateEntry
                 (
                     module,
-                    categoryTextSelector?.Invoke(module),
                     extraSegmentsSelector?.Invoke(module)
                 )
             );
@@ -83,21 +79,17 @@ public sealed class ModuleSearcher
         return cachedResult;
     }
 
-    private static SearchEntry CreateEntry(ModuleBase module, string? categoryText, IEnumerable<string?>? extraSegments)
+    private static SearchEntry CreateEntry(ModuleBase module, IEnumerable<string?>? extraSegments)
     {
-        var info           = module.Info;
-        var moduleType     = module.GetType();
-        var identifierText = string.IsNullOrWhiteSpace(module.ModuleIdentifier) ? module.ModuleName : module.ModuleIdentifier;
-        var categoryKey    = info.Category.ToString();
+        var info       = module.Info;
+        var moduleType = module.GetType();
 
         return new
         (
             module,
             [
                 CreateKey([info.Title], TitleWeight),
-                CreateKey([module.ModuleName, moduleType.Name, moduleType.FullName], NameWeight),
-                CreateKey([identifierText, module.ModuleGUID], IdentifierWeight),
-                CreateKey([categoryKey, categoryText], CategoryWeight),
+                CreateKey([module.ModuleName, moduleType.Name], NameWeight),
                 CreateKey
                 (
                     [
