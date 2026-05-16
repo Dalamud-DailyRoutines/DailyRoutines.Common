@@ -3,6 +3,8 @@ using System.IO;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface.Textures;
+using Dalamud.Utility;
+using Lumina.Text.ReadOnly;
 using OmenTools.Info.Dalamud;
 
 namespace DailyRoutines.Common.Info;
@@ -36,29 +38,89 @@ public static class Assets
         )
     ];
 
-    public static SeString BoxedLetterR { get; } =
-        new SeStringBuilder()
-            .AddUiForeground(SeIconChar.BoxedLetterR.ToIconString(), 34)
-            .Build();
+    public static ReadOnlySeString BoxedLetterR
+    {
+        get
+        {
+            if (!field.IsEmpty)
+                return field;
 
-    public static SeString BoxedLetterD { get; } =
-        new SeStringBuilder()
-            .AddUiForeground(SeIconChar.BoxedLetterD.ToIconString(), 34)
-            .Build();
+            using var rented = new RentedSeStringBuilder();
+            rented.Builder
+                  .PushColorType(34)
+                  .Append(SeIconChar.BoxedLetterR.ToIconString())
+                  .PopColorType();
 
-    public static SeString BoxedLettersDR { get; } =
-        new SeStringBuilder()
-            .AddUiForeground(SeIconChar.BoxedLetterD.ToIconString(), 34)
-            .AddUiForeground(SeIconChar.BoxedLetterR.ToIconString(), 34)
-            .Build();
+            return field = rented.Builder.ToReadOnlySeString();
+        }
+    }
 
-    public static SeString BracketDailyRoutines { get; } =
-        new SeStringBuilder()
-            .AddUiForeground("[Daily Routines]", 34)
-            .Build();
-    
-    public static SeString BracketDR { get; } =
-        new SeStringBuilder()
-            .AddUiForeground("[DR]", 34)
-            .Build();
+    public static ReadOnlySeString BoxedLetterD
+    {
+        get
+        {
+            if (!field.IsEmpty)
+                return field;
+
+            using var rented = new RentedSeStringBuilder();
+            rented.Builder
+                  .PushColorType(34)
+                  .Append(SeIconChar.BoxedLetterD.ToIconString())
+                  .PopColorType();
+
+            return field = rented.Builder.ToReadOnlySeString();
+        }
+    }
+
+    public static ReadOnlySeString BoxedLettersDR
+    {
+        get
+        {
+            if (!field.IsEmpty)
+                return field;
+
+            using var rented = new RentedSeStringBuilder();
+            rented.Builder
+                  .PushColorType(34)
+                  .Append(SeIconChar.BoxedLetterD.ToIconString())
+                  .Append(SeIconChar.BoxedLetterR.ToIconString())
+                  .PopColorType();
+
+            return field = rented.Builder.ToReadOnlySeString();
+        }
+    }
+
+    public static ReadOnlySeString BracketDailyRoutines
+    {
+        get
+        {
+            if (!field.IsEmpty)
+                return field;
+
+            using var rented = new RentedSeStringBuilder();
+            rented.Builder
+                  .PushColorType(34)
+                  .Append("[Daily Routines]")
+                  .PopColorType();
+
+            return field = rented.Builder.ToReadOnlySeString();
+        }
+    }
+
+    public static ReadOnlySeString BracketDR
+    {
+        get
+        {
+            if (!field.IsEmpty)
+                return field;
+
+            using var rented = new RentedSeStringBuilder();
+            rented.Builder
+                  .PushColorType(34)
+                  .Append("[DR]")
+                  .PopColorType();
+
+            return field = rented.Builder.ToReadOnlySeString();
+        }
+    }
 }
