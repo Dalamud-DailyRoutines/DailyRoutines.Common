@@ -8,7 +8,7 @@ public static class TextNodeExtension
     {
         public void AutoAdjustTextSize()
         {
-            while (textNode.FontSize > 1 && textNode.GetTextDrawSize(textNode.String).X > textNode.Size.X)
+            while (textNode.FontSize > 1 && textNode.GetTextDrawSize(textNode.String, false).X > textNode.Size.X)
                 textNode.FontSize--;
         }
     }
