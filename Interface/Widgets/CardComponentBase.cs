@@ -26,6 +26,7 @@ public abstract class CardComponentBase
 
     protected virtual bool DisableContent   => false;
     protected virtual bool DrawDisabledMask => false;
+    protected virtual bool EnablePressAnimation => false;
 
     private Vector2 currentSize;
     private Vector2 sizeVelocity;
@@ -193,7 +194,7 @@ public abstract class CardComponentBase
 
         hoverProgress = Math.Clamp(hoverProgress, 0f, 1f);
 
-        var isPressed         = isHovered && ImGui.IsMouseDown(ImGuiMouseButton.Left);
+        var isPressed         = EnablePressAnimation && isHovered && ImGui.IsMouseDown(ImGuiMouseButton.Left);
         var targetPress       = isPressed ? 1f : 0f;
         var pressDisplacement = pressProgress                          - targetPress;
         var pressForce        = (-PRESS_STIFFNESS * pressDisplacement) - (PRESS_DAMPING * pressVelocity);
