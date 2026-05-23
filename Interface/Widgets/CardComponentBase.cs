@@ -24,8 +24,8 @@ public abstract class CardComponentBase
 
     protected virtual Vector2 InitialSize => Vector2.Zero;
 
-    protected virtual bool DisableContent   => false;
-    protected virtual bool DrawDisabledMask => false;
+    protected virtual bool DisableContent       => false;
+    protected virtual bool DrawDisabledMask     => false;
     protected virtual bool EnablePressAnimation => false;
 
     private Vector2 currentSize;
@@ -54,6 +54,10 @@ public abstract class CardComponentBase
         var hoverOffset  = -2.5f * GlobalUIScale * hoverProgress;
         var pressOffset  = 1.5f  * GlobalUIScale * pressProgress;
         var visualOffset = new Vector2(0f, hoverOffset + pressOffset);
+
+        var clipMinY = drawList.GetClipRectMin().Y;
+        if (frameMin.Y                + pressOffset >= clipMinY && frameMin.Y + visualOffset.Y < clipMinY)
+            visualOffset.Y = clipMinY - frameMin.Y;
 
         var visualMin = frameMin + visualOffset;
 
