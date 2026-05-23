@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DailyRoutines.Common.Module.Enums;
 using Newtonsoft.Json;
 using OmenTools.OmenService;
@@ -67,7 +63,7 @@ public sealed class ModuleInfo
                 if (!string.IsNullOrEmpty(field)) return field;
                 if (string.IsNullOrWhiteSpace(GitHubLink)) return string.Empty;
                 
-                field = GitHubLink.Replace("https://github.com", "https://gh.atmoomen.top/avatars.githubusercontent.com/");
+                field = GitHubLink.Replace("https://github.com", "https://gh.atmoomen.top/avatars.githubusercontent.com");
                 return field;
             }
         }
