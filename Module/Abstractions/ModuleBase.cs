@@ -243,10 +243,33 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
     {
         try
         {
-            if (!File.Exists(ConfigFilePath)) return null;
-            var jsonString = File.ReadAllText(ConfigFilePath);
+            T? config = null;
+            if (File.Exists(ConfigFilePath))
+            {
+                var jsonString = File.ReadAllText(ConfigFilePath);
+                config = JsonConvert.DeserializeObject<T>(jsonString, JsonSerializerSettings.GetShared());
+            }
 
-            return JsonConvert.DeserializeObject<T>(jsonString, JsonSerializerSettings.GetShared());
+            if (config == null)
+            {
+                var tempConfig = Activator.CreateInstance<T>();
+                var prevModuleName = tempConfig?.PreviousModuleName;
+                if (!string.IsNullOrWhiteSpace(prevModuleName))
+                {
+                    var prevConfigFilePath = Path.Join(DService.Instance().PI.GetPluginConfigDirectory(), $"{prevModuleName}.json");
+                    if (File.Exists(prevConfigFilePath))
+                    {
+                        var prevJsonString = File.ReadAllText(prevConfigFilePath);
+                        config = JsonConvert.DeserializeObject<T>(prevJsonString, JsonSerializerSettings.GetShared());
+                        if (config != null)
+                        {
+                            SaveConfig(config);
+                        }
+                    }
+                }
+            }
+
+            return config;
         }
         catch (Exception ex)
         {
