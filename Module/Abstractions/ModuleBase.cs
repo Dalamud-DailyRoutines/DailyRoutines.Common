@@ -90,10 +90,10 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
         try
         {
             IsDisposed = false;
-            
+
             BaseInit();
             Init();
-            
+
             IsInitialized = true;
         }
         catch (Exception ex)
@@ -188,9 +188,9 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
     #region 生命周期
 
     public bool IsInitialized { get; private set; }
-    
+
     public bool IsDisposed { get; private set; }
-    
+
     public bool IsEnabled => IsInitialized && !IsDisposed;
 
     private void BaseInit()
@@ -244,6 +244,7 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
         try
         {
             T? config = null;
+
             if (File.Exists(ConfigFilePath))
             {
                 var jsonString = File.ReadAllText(ConfigFilePath);
@@ -252,19 +253,19 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
 
             if (config == null)
             {
-                var tempConfig = Activator.CreateInstance<T>();
+                var tempConfig     = Activator.CreateInstance<T>();
                 var prevModuleName = tempConfig?.PreviousModuleName;
+
                 if (!string.IsNullOrWhiteSpace(prevModuleName))
                 {
                     var prevConfigFilePath = Path.Join(DService.Instance().PI.GetPluginConfigDirectory(), $"{prevModuleName}.json");
+
                     if (File.Exists(prevConfigFilePath))
                     {
-                        var prevJsonString = File.ReadAllText(prevConfigFilePath);
-                        config = JsonConvert.DeserializeObject<T>(prevJsonString, JsonSerializerSettings.GetShared());
+                        var prevJSONString = File.ReadAllText(prevConfigFilePath);
+                        config = JsonConvert.DeserializeObject<T>(prevJSONString, JsonSerializerSettings.GetShared());
                         if (config != null)
-                        {
                             SaveConfig(config);
-                        }
                     }
                 }
             }
@@ -296,11 +297,11 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
     protected static void ExportToClipboard<T>(T config) where T : class
     {
         var host = ManagerHost.Current;
-        
+
         try
         {
             ArgumentNullException.ThrowIfNull(config);
-            
+
             ImGui.SetClipboardText(config.ToJSONBase64());
             NotifyHelper.Instance().NotificationSuccess(host.GetLoc("DailyModuleBase-Exported"));
         }
@@ -315,7 +316,7 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
     protected static T? ImportFromClipboard<T>() where T : class
     {
         var host = ManagerHost.Current;
-        
+
         try
         {
             var config = ImGui.GetClipboardText().FromJSONBase64<T>();
@@ -358,8 +359,8 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
 
         var fields = type.GetFields(FLAGS_ALL)
                          .Where
-                         (f => f.FieldType.IsGenericType &&
-                               f.FieldType.GetGenericTypeDefinition() == typeof(Hook<>) ||
+                         (f => (f.FieldType.IsGenericType &&
+                                f.FieldType.GetGenericTypeDefinition() == typeof(Hook<>)) ||
                                typeof(MemoryPatch).IsAssignableFrom(f.FieldType)
                          )
                          .ToList();
