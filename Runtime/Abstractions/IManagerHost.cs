@@ -10,7 +10,7 @@ public interface IManagerHost
 
     Task LoadAsync(ModuleBase module, bool affectConfig);
 
-    Task UnloadAsync(ModuleBase module, bool affectConfig, bool forceUnload);
+    Task UnloadAsync(ModuleBase module, bool affectConfig);
 
     bool AddWindow(Window window);
 

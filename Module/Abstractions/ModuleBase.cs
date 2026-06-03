@@ -47,11 +47,11 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
     public Task LoadAsync(bool affectConfig = false) =>
         ManagerHost.Current.LoadAsync(this, affectConfig);
 
-    public Task Unload(bool affectConfig = false, bool forceUnload = false) =>
-        _ = UnloadAsync(affectConfig, forceUnload);
+    public void Unload(bool affectConfig = false) =>
+        _ = UnloadAsync(affectConfig);
 
-    public Task UnloadAsync(bool affectConfig = false, bool forceUnload = false) =>
-        ManagerHost.Current.UnloadAsync(this, affectConfig, forceUnload);
+    public Task UnloadAsync(bool affectConfig = false) =>
+        ManagerHost.Current.UnloadAsync(this, affectConfig);
 
     public void ToggleOverlayConfig(bool? isEnabled = null)
     {
