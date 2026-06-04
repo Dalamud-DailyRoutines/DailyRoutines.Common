@@ -14,6 +14,9 @@ public static class Assets
     public static ISharedImmediateTexture Icon { get; } =
         DService.Instance().Texture.GetFromFile(Path.Join(DService.Instance().PI.AssemblyLocation.DirectoryName, "Assets", "icon.png"));
 
+    public static ISharedImmediateTexture BackgroundTexture { get; } =
+        DService.Instance().Texture.GetFromFile(Path.Join(DService.Instance().PI.AssemblyLocation.DirectoryName, "Assets", "background.png"));
+
     public static List<StyleInfo> Styles { get; } =
     [
         new
