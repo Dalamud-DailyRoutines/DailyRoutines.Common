@@ -19,5 +19,6 @@ public enum ModuleCategory
     Duty,
     Recruitment,
     Action,
+    CraftGather,
     GoldSaucer,
 }
