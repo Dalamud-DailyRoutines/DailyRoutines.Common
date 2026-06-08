@@ -68,7 +68,31 @@ public abstract class CardComponentBase
 
         using (ImRaii.Disabled(DisableContent))
         using (ImRaii.Group())
-            DrawContent(context, isHovered);
+        {
+            if (context.FrameWidth > 0f)
+            {
+                ImGui.Dummy(context.Padding with { X = context.FrameWidth });
+
+                using (ImRaii.PushIndent(context.Padding.X))
+                {
+                    var       contentWidth = context.FrameWidth - (context.Padding.X * 2);
+                    using var table        = ImRaii.Table("CardContentTable", 1, ImGuiTableFlags.None, new Vector2(contentWidth, 0));
+
+                    if (table)
+                    {
+                        ImGui.TableSetupColumn("ContentColumn", ImGuiTableColumnFlags.WidthStretch);
+                        ImGui.TableNextRow();
+                        ImGui.TableNextColumn();
+
+                        DrawContent(context, isHovered);
+                    }
+                }
+
+                ImGui.Dummy(context.Padding with { X = context.FrameWidth });
+            }
+            else
+                DrawContent(context, isHovered);
+        }
 
         var contentRectSize = ImGui.GetItemRectSize();
         var targetSize      = GetTargetSize(context, contentRectSize);
@@ -76,9 +100,8 @@ public abstract class CardComponentBase
         if (isFirstDraw)
             restingHeight = targetSize.Y;
 
-        if (hoverProgress == 0f && pressProgress == 0f)
-            restingHeight = targetSize.Y;
-        else if (Math.Abs(targetSize.Y - restingHeight) > 5.0f)
+        if ((hoverProgress == 0f && pressProgress == 0f) ||
+            Math.Abs(targetSize.Y - restingHeight) > 5.0f)
             restingHeight = targetSize.Y;
 
         var stableTargetSize = targetSize with { Y = restingHeight };
