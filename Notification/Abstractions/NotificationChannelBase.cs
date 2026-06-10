@@ -18,19 +18,19 @@ public abstract class NotificationChannelBase
         }
     }
     
-    public void PublicInit()
+    public async Task PublicInitAsync()
     {
         if (IsDisposed || IsInitialized)
             return;
 
         try
         {
-            Init();
+            await Init();
         }
         catch (Exception ex)
         {
             DLog.Error("初始化通知渠道失败", ex);
-            PublicUninit();
+            await PublicUninitAsync();
         }
         finally
         {
@@ -38,14 +38,14 @@ public abstract class NotificationChannelBase
         }
     }
 
-    public void PublicUninit()
+    public async Task PublicUninitAsync()
     {
         if (IsDisposed)
             return;
 
         try
         {
-            Uninit();
+            await Uninit();
         }
         catch (Exception ex)
         {
@@ -115,9 +115,9 @@ public abstract class NotificationChannelBase
         }
     }
 
-    protected virtual void Init() { }
+    protected virtual Task Init() => Task.CompletedTask;
     
-    protected virtual void Uninit() { }
+    protected virtual Task Uninit() => Task.CompletedTask;
     
     public virtual void ConfigUI() { }
 

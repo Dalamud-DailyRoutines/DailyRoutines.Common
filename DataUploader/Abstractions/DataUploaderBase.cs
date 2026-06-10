@@ -19,19 +19,19 @@ public abstract class DataUploaderBase
         }
     }
     
-    public void PublicInit()
+    public async Task PublicInitAsync()
     {
         if (IsDisposed || IsInitialized)
             return;
 
         try
         {
-            Init();
+            await Init();
         }
         catch (Exception ex)
         {
             DLog.Error("初始化数据上传器失败", ex);
-            PublicUninit();
+            await PublicUninitAsync();
         }
         finally
         {
@@ -39,14 +39,14 @@ public abstract class DataUploaderBase
         }
     }
 
-    public void PublicUninit()
+    public async Task PublicUninitAsync()
     {
         if (IsDisposed)
             return;
 
         try
         {
-            Uninit();
+            await Uninit();
         }
         catch (Exception ex)
         {
@@ -68,9 +68,9 @@ public abstract class DataUploaderBase
 
     #region 继承
     
-    protected virtual void Init() { }
+    protected virtual Task Init() => Task.CompletedTask;
 
-    protected virtual void Uninit() { }
+    protected virtual Task Uninit() => Task.CompletedTask;
 
     #endregion
 
