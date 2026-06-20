@@ -2,7 +2,7 @@ using System.Numerics;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using KamiToolKit;
+using KamiToolKit.BaseTypes;
 using OmenTools.Interop.Game.Helpers;
 
 namespace DailyRoutines.Common.KamiToolKit.Addons;
