@@ -1,4 +1,5 @@
-﻿using KamiToolKit.Classes;
+﻿using System.Numerics;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using KamiToolKit.Nodes;
 
 namespace DailyRoutines.Common.Info;
@@ -23,7 +24,7 @@ public static class AtkColors
     /// <summary>强调值：在绝大多数主题下为深棕色文字与浅粉色描边</summary>
     public static AtkColor ValueEmphasize { get; } = new(64, 65);
     
-    public readonly struct AtkColor
+    public readonly unsafe struct AtkColor
     (
         uint textColor,
         uint edgeColor
@@ -34,8 +35,14 @@ public static class AtkColors
 
         public void ApplyTo(ref TextNode node)
         {
-            node.TextColor        = ColorHelper.GetColor(TextColor);
-            node.TextOutlineColor = ColorHelper.GetColor(EdgeColor);
+            node.TextColor        = GetTextColor();
+            node.TextOutlineColor = GetEdgeColor();
         }
+
+        public Vector4 GetTextColor() =>
+            AtkStage.Instance()->AtkUIColorHolder->GetColor(true, TextColor).ToVector4();
+        
+        public Vector4 GetEdgeColor() =>
+            AtkStage.Instance()->AtkUIColorHolder->GetColor(true, EdgeColor).ToVector4();
     }
 }
