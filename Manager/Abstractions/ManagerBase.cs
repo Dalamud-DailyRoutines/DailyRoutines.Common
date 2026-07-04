@@ -32,7 +32,7 @@ public abstract class ManagerBase
         
         try
         {
-            await Init().ConfigureAwait(false);
+            await Init();
             
             IsInitialized = true;
         }
@@ -50,7 +50,7 @@ public abstract class ManagerBase
         
         try
         {
-            await Uninit().ConfigureAwait(false);
+            await Uninit();
         }
         catch (Exception ex)
         {
@@ -69,7 +69,7 @@ public abstract class ManagerBase
 
         try
         {
-            await PostInit().ConfigureAwait(false);
+            await PostInit();
         }
         catch (Exception ex)
         {
