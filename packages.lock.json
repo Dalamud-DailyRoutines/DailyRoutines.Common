@@ -14,15 +14,6 @@
         "resolved": "1.2.39",
         "contentHash": "fcFN01tDTIQqDuTwr1jUQK/geofiwjG5DycJQOnC72i1SsLAk1ELe+apBOuZ11UMQG8YKFZG1FgvjZPbqHyatg=="
       },
-      "MemoEngine": {
-        "type": "Direct",
-        "requested": "[2.3.0, )",
-        "resolved": "2.3.0",
-        "contentHash": "6Cg2qt8ZbXbjdbCGLNyeb1vSLqSyLdcSElgNoEEUH7vu+d+8uMGCSfnz0QxMR/1Fmgo8/uR+hCQtdz7WBsvkDw==",
-        "dependencies": {
-          "Newtonsoft.Json": "13.0.4"
-        }
-      },
       "Microsoft.CodeAnalysis.CSharp": {
         "type": "Direct",
         "requested": "[5.0.0, )",
@@ -120,11 +111,6 @@
         "dependencies": {
           "NAudio.Core": "2.2.1"
         }
-      },
-      "Newtonsoft.Json": {
-        "type": "Transitive",
-        "resolved": "13.0.4",
-        "contentHash": "pdgNNMai3zv51W5aq268sujXUyx7SNdE2bj1wZcWjAQrKMFZV260lbqYop1d2GM67JI1huLRwxo9ZqnfF/lC6A=="
       },
       "System.Net.WebSockets.Client.Managed": {
         "type": "Transitive",
