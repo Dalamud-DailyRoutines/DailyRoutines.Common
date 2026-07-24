@@ -38,6 +38,12 @@ public static class AtkColors
             node.TextColor        = GetTextColor();
             node.TextOutlineColor = GetEdgeColor();
         }
+        
+        public void ApplyTo(ref LabelTextNode node)
+        {
+            node.TextColor        = GetTextColor();
+            node.TextOutlineColor = GetEdgeColor();
+        }
 
         public Vector4 GetTextColor() =>
             AtkStage.Instance()->AtkUIColorHolder->GetColor(true, TextColor).ToVector4();
