@@ -7,13 +7,7 @@ using Lumina.Text.ReadOnly;
 
 namespace DailyRoutines.Common.KamiToolKit.Nodes;
 
-/// <summary>
-/// A custom implementation of a TreeListHeaderNode.
-/// </summary>
-/// <remarks>
-/// This implementation is meant to mimic the native games lists sub-heading nodes, but it's not great.
-/// </remarks>
-public class TreeListHeaderNode : ResNode {
+public class CollaspingHeaderNode : ResNode {
 
     /// <summary>
     /// Not intended for public use, but it's here if you absolutely need it.
@@ -34,9 +28,9 @@ public class TreeListHeaderNode : ResNode {
     }
 
     /// <summary>
-    /// Constructs a new <see cref="TreeListHeaderNode"/>
+    /// Constructs a new <see cref="CollaspingHeaderNode"/>
     /// </summary>
-    public TreeListHeaderNode() {
+    public CollaspingHeaderNode() {
         DecorationNode = new SimpleNineGridNode {
             TexturePath        = "ui/uld/journal_Separator.tex",
             TextureCoordinates = new Vector2(0.0f,   0.0f),

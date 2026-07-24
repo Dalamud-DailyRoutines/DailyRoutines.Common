@@ -3,13 +3,7 @@ using KamiToolKit.Nodes;
 
 namespace DailyRoutines.Common.KamiToolKit.Nodes;
 
-/// <summary>
-/// Custom implementation of a tree list node. Kinda ghetto.
-/// </summary>
-/// <remarks>
-/// Needs reworking, it sorta works but is buggy at the moment.
-/// </remarks>
-public class TreeListNode : ResNode {
+public class CollaspingNode : ResNode {
 
     /// <summary>
     /// Gets or sets the spacing between category nodes.
@@ -24,12 +18,12 @@ public class TreeListNode : ResNode {
     /// <summary>
     /// Gets a readonly list of contained category nodes.
     /// </summary>
-    public ReadOnlyCollection<TreeListCategoryNode> CategoryNodes => children.AsReadOnly();
+    public ReadOnlyCollection<CollaspingCategoryNode> CategoryNodes => children.AsReadOnly();
 
     /// <summary>
     /// Adds a category node to the tree.
     /// </summary>
-    public void AddCategoryNode(TreeListCategoryNode node) {
+    public void AddCategoryNode(CollaspingCategoryNode node) {
         RefreshLayout();
 
         children.Add(node);
@@ -59,9 +53,9 @@ public class TreeListNode : ResNode {
     }
 
     /// <summary>
-    /// Constructs a new <see cref="TreeListNode"/>
+    /// Constructs a new <see cref="CollaspingNode"/>
     /// </summary>
-    public TreeListNode() {
+    public CollaspingNode() {
         childContainer = new ResNode();
         childContainer.AttachNode(this);
     }
@@ -73,5 +67,5 @@ public class TreeListNode : ResNode {
     }
 
     private readonly ResNode childContainer;
-    private readonly List<TreeListCategoryNode> children = [];
+    private readonly List<CollaspingCategoryNode> children = [];
 }

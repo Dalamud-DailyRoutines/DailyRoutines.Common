@@ -9,16 +9,7 @@ using Lumina.Text.ReadOnly;
 
 namespace DailyRoutines.Common.KamiToolKit.Nodes;
 
-/// <summary>
-/// A custom implementation of a TreeListCategory Node. todo: maybe rewrite?
-/// </summary>
-/// <remarks>
-/// This implementation is meant to mimic the native games list category nodes, but it's not great.
-/// </remarks>
-/// <remarks>
-/// Needs reworking, it sorta works but is buggy at the moment.
-/// </remarks>
-public unsafe class TreeListCategoryNode : ResNode {
+public unsafe class CollaspingCategoryNode : ResNode {
 
     /// <summary>
     /// Not intended for public use, but it's here if you absolutely need it.
@@ -48,7 +39,7 @@ public unsafe class TreeListCategoryNode : ResNode {
     /// <summary>
     /// Gets a readonly collection of just the HeaderNodes.
     /// </summary>
-    public IReadOnlyCollection<TreeListHeaderNode> HeaderNodes => children.OfType<TreeListHeaderNode>().ToList();
+    public IReadOnlyCollection<CollaspingHeaderNode> HeaderNodes => children.OfType<CollaspingHeaderNode>().ToList();
 
     /// <summary>
     /// Gets a read only collect of all children nodes.
@@ -68,7 +59,7 @@ public unsafe class TreeListCategoryNode : ResNode {
     /// <summary>
     /// Gets a reference to the parent TreeList that contains this CategoryNode.
     /// </summary>
-    public TreeListNode? ParentTreeListNode { get; set; }
+    public CollaspingNode? ParentTreeListNode { get; set; }
 
     /// <summary>
     /// Gets or sets whether this node is collapsed
@@ -118,7 +109,7 @@ public unsafe class TreeListCategoryNode : ResNode {
     /// Add a new header node with the specified label.
     /// </summary>
     public void AddHeader(ReadOnlySeString label) {
-        var newHeaderNode = new TreeListHeaderNode {
+        var newHeaderNode = new CollaspingHeaderNode {
             Size = new Vector2(Width, 24.0f),
             String = label,
         };
@@ -142,9 +133,9 @@ public unsafe class TreeListCategoryNode : ResNode {
     }
 
     /// <summary>
-    /// Constructs a new <see cref="TreeListCategoryNode"/>
+    /// Constructs a new <see cref="CollaspingCategoryNode"/>
     /// </summary>
-    public TreeListCategoryNode() {
+    public CollaspingCategoryNode() {
         CollisionNode = new CollisionNode {
             Height = 28.0f,
         };
