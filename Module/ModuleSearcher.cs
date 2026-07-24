@@ -54,14 +54,19 @@ public sealed class ModuleSearcher
         );
     }
 
-    public ModuleBase[] Search(string query)
-    {
-        return matcher.Search
+    public ModuleBase[] Search
+    (
+        string query
+    ) =>
+        matcher.Search
         (
             query,
             static (left, right) =>
-                string.Compare(left.Info.Title, right.Info.Title, StringComparison.OrdinalIgnoreCase),
-            30
+                string.Compare
+                (
+                    left.Info.Title,
+                    right.Info.Title,
+                    StringComparison.OrdinalIgnoreCase
+                )
         );
-    }
 }
