@@ -32,13 +32,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\lib\EdgeTTS\EdgeTTS.csproj"
-                          Condition="Exists('..\lib\EdgeTTS\EdgeTTS.csproj')" />
-        <Reference Include="EdgeTTS"
-                   Condition="!Exists('..\lib\EdgeTTS\EdgeTTS.csproj')">
-            <HintPath>$(DailyRoutinesLibPath)EdgeTTS.dll</HintPath>
-        </Reference>
-
         <ProjectReference Include="..\lib\KamiToolKit\KamiToolKit.csproj"
                           Condition="Exists('..\lib\KamiToolKit\KamiToolKit.csproj')" />
         <Reference Include="KamiToolKit"
