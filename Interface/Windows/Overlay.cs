@@ -10,7 +10,7 @@ public class Overlay : Window
         ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar;
 
     public Overlay(ModuleBase moduleBase, string? title = null) :
-        base($"{(string.IsNullOrEmpty(title) ? string.Empty : title)}###{moduleBase}")
+        base($"{(string.IsNullOrEmpty(title) ? string.Empty : title)}###{moduleBase.GetType().FullName ?? moduleBase.ModuleName}")
     {
         Flags              = WINDOW_FLAGS;
         RespectCloseHotkey = false;
