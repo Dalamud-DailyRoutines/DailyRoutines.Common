@@ -152,9 +152,9 @@ public abstract class DataUploaderBase
         {
             await cancellationTokenSource.CancelAsync();
         }
-        catch (Exception ex)
+        catch
         {
-            DLog.Error($"取消数据上传器后台任务失败: {GetType().Name}", ex);
+            // ignored
         }
 
         while (Volatile.Read(ref activeBackgroundRegistrations) != 0)
@@ -170,13 +170,9 @@ public abstract class DataUploaderBase
         {
             await operation(cancellationTokenSource.Token);
         }
-        catch (OperationCanceledException) when (cancellationTokenSource.IsCancellationRequested)
+        catch
         {
-            return;
-        }
-        catch (Exception ex)
-        {
-            DLog.Error($"数据上传器后台任务执行失败: {GetType().Name}", ex);
+            // ignored
         }
     }
 

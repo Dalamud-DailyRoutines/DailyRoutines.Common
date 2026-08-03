@@ -189,9 +189,9 @@ public abstract class ManagerBase
         {
             await cancellationTokenSource.CancelAsync();
         }
-        catch (Exception ex)
+        catch
         {
-            DLog.Error($"取消管理器后台任务失败: {GetType().Name}", ex);
+            // ignored
         }
 
         while (Volatile.Read(ref activeBackgroundRegistrations) != 0)
@@ -224,12 +224,9 @@ public abstract class ManagerBase
         {
             await operation(cancellationTokenSource.Token);
         }
-        catch (OperationCanceledException) when (cancellationTokenSource.IsCancellationRequested)
+        catch
         {
-        }
-        catch (Exception ex)
-        {
-            DLog.Error($"管理器后台任务执行失败: {GetType().Name}", ex);
+            // ignored
         }
         finally
         {
