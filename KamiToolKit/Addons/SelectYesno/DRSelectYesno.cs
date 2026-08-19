@@ -45,9 +45,19 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         hasResult            = false;
         suppressHideCallback = false;
 
+        if (WindowNode is WindowNode window)
+        {
+            window.ShowCloseButton               = true;
+            window.HeaderContainerNode.IsVisible = true;
+            window.HeaderCollisionNode.IsVisible = true;
+            window.TitleNode.IsVisible           = false;
+            window.SubtitleNode.IsVisible        = false;
+            window.DividingLineNode.IsVisible    = false;
+        }
+
         PromptNode = new TextNode
         {
-            Size             = new Vector2(options.Width - 48.0f, options.MaxPromptHeight),
+            Size             = new Vector2(344.0f, 0.0f),
             TextColor        = ColorHelper.GetColor(8),
             TextOutlineColor = ColorHelper.GetColor(7),
             FontSize         = 14,
@@ -118,7 +128,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
             {
                 InternalName              = "DRSelectYesno",
                 Title                     = string.Empty,
-                Size                      = new Vector2(options.Width, 160.0f),
+                Size                      = new Vector2(400.0f, 96.0f),
                 OpenWindowSoundEffectId   = options.OpenSoundEffectID,
                 RespectCloseAll           = options.RespectCloseAll,
                 DisableClamping           = false,
@@ -128,11 +138,13 @@ public sealed unsafe class DRSelectYesno : NativeAddon
                 CreateWindowNode = () =>
                 {
                     var window = new WindowNode();
-                    window.ShowCloseButton               = false;
+                    window.ShowCloseButton               = true;
                     window.ShowConfigButton              = false;
                     window.ShowHelpButton                = false;
-                    window.HeaderContainerNode.IsVisible = false;
-                    window.HeaderCollisionNode.IsVisible = false;
+                    window.HeaderContainerNode.IsVisible = true;
+                    window.HeaderCollisionNode.IsVisible = true;
+                    window.TitleNode.IsVisible           = false;
+                    window.SubtitleNode.IsVisible        = false;
                     window.DividingLineNode.IsVisible    = false;
                     return window;
                 }
@@ -200,16 +212,8 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         PrimaryButton.IsVisible   = showPrimary;
         SecondaryButton.IsVisible = showSecondary;
 
-        var promptWidth = MathF.Max(1.0f, nextOptions.Width - 48.0f);
-        PromptNode.Size = new Vector2(promptWidth, nextOptions.MaxPromptHeight);
-
-        var measuredHeight = PromptNode.GetTextDrawSize().Y;
-        var promptHeight = Math.Clamp
-        (
-            MathF.Max(measuredHeight, nextOptions.MinPromptHeight),
-            nextOptions.MinPromptHeight,
-            nextOptions.MaxPromptHeight
-        );
+        PromptNode.Size = new Vector2(344.0f, 0.0f);
+        var promptHeight = PromptNode.GetTextDrawSize().Y;
 
         var buttonCount = (showPrimary ?
                                1 :
@@ -222,20 +226,20 @@ public sealed unsafe class DRSelectYesno : NativeAddon
                                28.0f;
         var buttonSpacing = buttonCount == 0 ?
                                 0.0f :
-                                16.0f;
-        var height = 20.0f + promptHeight + buttonSpacing + buttonHeight + 18.0f;
+                                8.0f;
+        var height = MathF.Max(96.0f, 20.0f + promptHeight + buttonSpacing + buttonHeight + 18.0f);
 
-        SetWindowSize(nextOptions.Width, height);
+        SetWindowSize(400.0f, height);
 
-        PromptNode.Size     = new Vector2(promptWidth, promptHeight);
-        PromptNode.Position = new Vector2(24.0f,       20.0f);
+        PromptNode.Size     = new Vector2(344.0f, promptHeight);
+        PromptNode.Position = new Vector2(28.0f,  20.0f);
 
         var buttonWidth = 100.0f;
         var buttonGap   = 8.0f;
         var totalButtonWidth = buttonCount == 2 ?
                                    (buttonWidth * 2.0f) + buttonGap :
                                    buttonWidth;
-        var buttonLeft = (nextOptions.Width - totalButtonWidth) / 2.0f;
+        var buttonLeft = (400.0f - totalButtonWidth) / 2.0f;
         var buttonY    = height - buttonHeight - 18.0f;
 
         var visibleButtons = new List<TextButtonNode>(buttonCount);
@@ -341,15 +345,6 @@ public sealed unsafe class DRSelectYesno : NativeAddon
     {
         if ((options.Buttons & ~DRSelectYesnoButtons.Both) != 0)
             throw new ArgumentOutOfRangeException(nameof(options.Buttons));
-
-        if (!float.IsFinite(options.Width) || options.Width < 240.0f || options.Width > 800.0f)
-            throw new ArgumentOutOfRangeException(nameof(options.Width));
-
-        if (!float.IsFinite(options.MinPromptHeight) || options.MinPromptHeight < 1.0f)
-            throw new ArgumentOutOfRangeException(nameof(options.MinPromptHeight));
-
-        if (!float.IsFinite(options.MaxPromptHeight) || options.MaxPromptHeight < options.MinPromptHeight)
-            throw new ArgumentOutOfRangeException(nameof(options.MaxPromptHeight));
 
         if (options.Position is { } position && (!float.IsFinite(position.X) || !float.IsFinite(position.Y)))
             throw new ArgumentOutOfRangeException(nameof(options.Position));

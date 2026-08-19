@@ -14,13 +14,7 @@ public sealed record DRSelectYesnoOptions
 
     public ReadOnlySeString? NoButtonText { get; init; }
 
-    public AlignmentType PromptAlignment { get; init; } = AlignmentType.Center;
-
-    public float Width { get; init; } = 360.0f;
-
-    public float MinPromptHeight { get; init; } = 28.0f;
-
-    public float MaxPromptHeight { get; init; } = 300.0f;
+    public AlignmentType PromptAlignment { get; init; } = AlignmentType.Left;
 
     public bool RespectCloseAll { get; init; } = true;
 
