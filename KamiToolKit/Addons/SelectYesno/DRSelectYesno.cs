@@ -9,7 +9,7 @@ namespace DailyRoutines.Common.KamiToolKit.Addons.SelectYesno;
 
 public sealed unsafe class DRSelectYesno : NativeAddon
 {
-    public static Task Open
+    public static DRSelectYesno Open
     (
         DRSelectYesnoOptions options
     )
@@ -17,23 +17,34 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         ArgumentNullException.ThrowIfNull(options);
         ValidateOptions(options);
 
-        return DService.Instance().Framework.RunOnFrameworkThread
-        (() => { OpenOnFrameworkThread(options); }
-        );
-    }
+        var addon = new DRSelectYesno(options)
+        {
+            InternalName              = "DRSelectYesno",
+            Title                     = string.Empty,
+            Size                      = new Vector2(400.0f, 96.0f),
+            OpenWindowSoundEffectId   = options.OpenSoundEffectID,
+            RespectCloseAll           = options.RespectCloseAll,
+            DisableClamping           = false,
+            EnableContextMenu         = false,
+            DisableScaleContextOption = true,
+            RememberClosePosition     = false,
+            CreateWindowNode = () =>
+            {
+                var window = new WindowNode();
+                window.ShowCloseButton               = true;
+                window.ShowConfigButton              = false;
+                window.ShowHelpButton                = false;
+                window.HeaderContainerNode.IsVisible = true;
+                window.HeaderCollisionNode.IsVisible = true;
+                window.TitleNode.IsVisible           = false;
+                window.SubtitleNode.IsVisible        = false;
+                window.DividingLineNode.IsVisible    = false;
+                return window;
+            }
+        };
 
-    public static Task CloseCurrent()
-        => DService.Instance().Framework.RunOnFrameworkThread(() => currentAddon?.Close());
-
-    public override void Dispose()
-    {
-        if (ReferenceEquals(currentAddon, this))
-            currentAddon = null;
-
-        openAfterFinalize    = false;
-        suppressHideCallback = true;
-
-        base.Dispose();
+        addon.Open();
+        return addon;
     }
 
     protected override void OnSetup
@@ -42,8 +53,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         Span<AtkValue> atkValueSpan
     )
     {
-        hasResult            = false;
-        suppressHideCallback = false;
+        hasResult = false;
 
         if (WindowNode is WindowNode window)
         {
@@ -91,11 +101,11 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         AtkUnitBase* addon
     )
     {
-        if (suppressHideCallback || hasResult)
+        if (hasResult)
             return;
 
         hasResult = true;
-        QueueCallback(options.Callback, DRSelectYesnoResult.Closed);
+        options.Callback?.Invoke(this, DRSelectYesnoResult.Closed);
     }
 
     protected override void OnFinalize
@@ -105,10 +115,9 @@ public sealed unsafe class DRSelectYesno : NativeAddon
     {
         base.OnFinalize(addon);
 
-        PromptNode           = null;
-        PrimaryButton        = null;
-        SecondaryButton      = null;
-        suppressHideCallback = false;
+        PromptNode      = null;
+        PrimaryButton   = null;
+        SecondaryButton = null;
     }
 
     private DRSelectYesno
@@ -117,95 +126,21 @@ public sealed unsafe class DRSelectYesno : NativeAddon
     )
         => this.options = options;
 
-    private static void OpenOnFrameworkThread
-    (
-        DRSelectYesnoOptions options
-    )
-    {
-        if (currentAddon is null)
-        {
-            currentAddon = new DRSelectYesno(options)
-            {
-                InternalName              = "DRSelectYesno",
-                Title                     = string.Empty,
-                Size                      = new Vector2(400.0f, 96.0f),
-                OpenWindowSoundEffectId   = options.OpenSoundEffectID,
-                RespectCloseAll           = options.RespectCloseAll,
-                DisableClamping           = false,
-                EnableContextMenu         = false,
-                DisableScaleContextOption = true,
-                RememberClosePosition     = false,
-                CreateWindowNode = () =>
-                {
-                    var window = new WindowNode();
-                    window.ShowCloseButton               = true;
-                    window.ShowConfigButton              = false;
-                    window.ShowHelpButton                = false;
-                    window.HeaderContainerNode.IsVisible = true;
-                    window.HeaderCollisionNode.IsVisible = true;
-                    window.TitleNode.IsVisible           = false;
-                    window.SubtitleNode.IsVisible        = false;
-                    window.DividingLineNode.IsVisible    = false;
-                    return window;
-                }
-            };
-
-            currentAddon.Open();
-            return;
-        }
-
-        if (!currentAddon.IsOpen && currentAddon.InternalAddon is not null)
-        {
-            currentAddon.suppressHideCallback = true;
-            currentAddon.openAfterFinalize    = true;
-            DService.Instance().Framework.RunOnTick(currentAddon.ReopenAfterFinalize);
-        }
-
-        var previousCallback = currentAddon.ReplaceOptions(options);
-        previousCallback?.Invoke(DRSelectYesnoResult.Replaced);
-
-        if (!currentAddon.IsOpen && currentAddon.InternalAddon is null)
-            currentAddon.Open();
-    }
-
-    private Action<DRSelectYesnoResult>? ReplaceOptions
-    (
-        DRSelectYesnoOptions nextOptions
-    )
-    {
-        var previousCallback = hasResult ?
-                                   null :
-                                   options.Callback;
-
-        options                 = nextOptions;
-        hasResult               = false;
-        RespectCloseAll         = nextOptions.RespectCloseAll;
-        OpenWindowSoundEffectId = nextOptions.OpenSoundEffectID;
-
-        if (PromptNode is not null)
-        {
-            ApplyOptions(nextOptions);
-            SetInitialPosition();
-        }
-
-        return previousCallback;
-    }
-
     private void ApplyOptions
     (
-        DRSelectYesnoOptions nextOptions
+        DRSelectYesnoOptions dialogOptions
     )
     {
         if (PromptNode is null || PrimaryButton is null || SecondaryButton is null)
             return;
 
-        PromptNode.AlignmentType = nextOptions.PromptAlignment;
-        PromptNode.String        = nextOptions.Prompt;
+        PromptNode.AlignmentType = dialogOptions.PromptAlignment;
+        PromptNode.String        = dialogOptions.Prompt;
 
-        SetButtonText(PrimaryButton,   nextOptions.YesButtonText, 3);
-        SetButtonText(SecondaryButton, nextOptions.NoButtonText,  4);
+        SetButtonText(PrimaryButton,   dialogOptions.YesButtonText, 3);
+        SetButtonText(SecondaryButton, dialogOptions.NoButtonText,  4);
 
-        var buttons       = nextOptions.Buttons;
+        var buttons       = dialogOptions.Buttons;
         var showPrimary   = (buttons & DRSelectYesnoButtons.Yes) != 0;
         var showSecondary = (buttons & DRSelectYesnoButtons.No)  != 0;
 
@@ -307,35 +242,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         hasResult = true;
         var callback = options.Callback;
         Close();
-        QueueCallback(callback, result);
-    }
-
-    private static void QueueCallback
-    (
-        Action<DRSelectYesnoResult>? callback,
-        DRSelectYesnoResult          result
-    )
-    {
-        if (callback is not null)
-            DService.Instance().Framework.RunOnTick(() => callback(result));
-    }
-
-    private void ReopenAfterFinalize()
-    {
-        if (!openAfterFinalize || DService.IsDisposed)
-        {
-            openAfterFinalize = false;
-            return;
-        }
-
-        if (InternalAddon is null)
-        {
-            openAfterFinalize = false;
-            Open();
-            return;
-        }
-
-        DService.Instance().Framework.RunOnTick(ReopenAfterFinalize);
+        callback?.Invoke(this, result);
     }
 
     private static void ValidateOptions
@@ -350,13 +257,9 @@ public sealed unsafe class DRSelectYesno : NativeAddon
             throw new ArgumentOutOfRangeException(nameof(options.Position));
     }
 
-    private static DRSelectYesno? currentAddon;
-
-    private DRSelectYesnoOptions options;
-    private TextNode?            PromptNode      { get; set; }
-    private TextButtonNode?      PrimaryButton   { get; set; }
-    private TextButtonNode?      SecondaryButton { get; set; }
-    private bool                 hasResult;
-    private bool                 openAfterFinalize;
-    private bool                 suppressHideCallback;
+    private readonly DRSelectYesnoOptions options;
+    private TextNode?                         PromptNode      { get; set; }
+    private TextButtonNode?                   PrimaryButton   { get; set; }
+    private TextButtonNode?                   SecondaryButton { get; set; }
+    private bool                              hasResult;
 }

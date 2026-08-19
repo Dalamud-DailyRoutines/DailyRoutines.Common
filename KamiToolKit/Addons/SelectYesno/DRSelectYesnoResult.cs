@@ -4,6 +4,5 @@ public enum DRSelectYesnoResult : byte
 {
     Yes,
     No,
-    Closed,
-    Replaced
+    Closed
 }

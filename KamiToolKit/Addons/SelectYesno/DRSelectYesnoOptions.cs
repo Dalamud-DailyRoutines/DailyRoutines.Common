@@ -22,5 +22,5 @@ public sealed record DRSelectYesnoOptions
 
     public int OpenSoundEffectID { get; init; } = 23;
 
-    public Action<DRSelectYesnoResult>? Callback { get; init; }
+    public Action<DRSelectYesno, DRSelectYesnoResult>? Callback { get; init; }
 }
