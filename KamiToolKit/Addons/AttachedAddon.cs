@@ -18,6 +18,16 @@ public abstract unsafe class AttachedAddon : NativeAddon
     protected virtual bool CanOpenAddon =>
         true;
 
+    // 宿主被隐藏（IsVisible=false）时仍保持附着与定位。
+    // 适用于隐藏宿主的替代聊天框场景（如 ChatTwo 隐藏原生 ChatLog 后快捷面板仍需显示）。
+    protected virtual bool IgnoreHostVisibility =>
+        false;
+
+    // 自定义附着位置提供器；返回非 null 时取代 AttachPosition 的宿主相对计算。
+    // 参数为当前面板 addon 指针，返回值直接作为窗口位置（仍叠加 PositionOffset）。
+    protected virtual Vector2? CalculateCustomPosition(AtkUnitBase* addon) =>
+        null;
+
     protected AtkUnitBase* HostAddon =>
         AddonHelper.GetByName(hostAddonName);
 
@@ -25,6 +35,12 @@ public abstract unsafe class AttachedAddon : NativeAddon
     private readonly bool   runSetupForCurrentHostAddon;
 
     private bool isClosingAddonOnly;
+
+    // IgnoreHostVisibility 时只要求节点就绪（IsFullyLoaded），不再要求 IsVisible
+    private bool IsHostReady() =>
+        IgnoreHostVisibility
+            ? HostAddon != null && HostAddon->IsFullyLoaded()
+            : HostAddon->IsAddonAndNodesReady();
 
     protected AttachedAddon(string hostAddon, params AddonEvent[] hostAddonEvents)
     {
@@ -37,7 +53,7 @@ public abstract unsafe class AttachedAddon : NativeAddon
         DService.Instance().Framework.RunOnFrameworkThread
         (() =>
             {
-                if (!HostAddon->IsAddonAndNodesReady())
+                if (!IsHostReady())
                     return;
 
                 if (runSetupForCurrentHostAddon)
@@ -70,7 +86,7 @@ public abstract unsafe class AttachedAddon : NativeAddon
     {
         var hostAddon = HostAddon;
 
-        if (!HostAddon->IsAddonAndNodesReady())
+        if (!IsHostReady())
         {
             CloseAddonOnly();
             return;
@@ -79,6 +95,14 @@ public abstract unsafe class AttachedAddon : NativeAddon
         var hostPosition = new Vector2(hostAddon->RootNode->ScreenX,    hostAddon->RootNode->ScreenY);
         var hostSize     = new Vector2(hostAddon->GetScaledWidth(true), hostAddon->GetScaledHeight(true));
         var addonSize    = new Vector2(addon->GetScaledWidth(true),     addon->GetScaledHeight(true));
+
+        // 自定义附着位置（忽略宿主坐标的场景，如 ChatTwo 隐藏宿主后用窗口位置跟随）
+        if (CalculateCustomPosition(addon) is { } customPosition)
+        {
+            SetWindowPosition(customPosition + PositionOffset);
+            OnAttachedAddonUpdate(addon, hostAddon);
+            return;
+        }
 
         var position = AttachPosition switch
         {
@@ -142,7 +166,7 @@ public abstract unsafe class AttachedAddon : NativeAddon
 
     private void OpenAddon()
     {
-        if (IsOpen || !HostAddon->IsAddonAndNodesReady()) return;
+        if (IsOpen || !IsHostReady()) return;
 
         Open();
     }
