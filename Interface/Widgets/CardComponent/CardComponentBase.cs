@@ -15,18 +15,32 @@ public abstract class CardComponentBase
     private const float PRESS_STIFFNESS = 320f;
     private const float PRESS_DAMPING   = 22f;
 
-    private static readonly Vector4 RestingBorder = new(1f, 1f, 1f, 0.06f);
-    private static readonly Vector4 HoveredBorder = KnownColor.DodgerBlue.ToVector4().WithW(0.8f);
+    protected Vector2 CurrentSize => isFirstDraw && currentSize == Vector2.Zero ?
+                                         InitialSize :
+                                         currentSize;
 
-    protected Vector2 CurrentSize => isFirstDraw && currentSize == Vector2.Zero ? InitialSize : currentSize;
-
-    protected static float Rounding => 8f * GlobalUIScale;
+    protected virtual float Rounding => 8f * GlobalUIScale;
 
     protected virtual Vector2 InitialSize => Vector2.Zero;
 
     protected virtual bool DisableContent       => false;
     protected virtual bool DrawDisabledMask     => false;
     protected virtual bool EnablePressAnimation => false;
+    protected virtual bool EnableHoverAnimation => true;
+    protected virtual bool EnableTopHighlight   => true;
+    protected virtual bool EnableGlow           => true;
+    protected virtual bool WrapInContentTable   => true;
+    protected virtual bool IsSelected           => false;
+
+    protected virtual CardCursorAdvance CursorAdvance => CardCursorAdvance.Bottom;
+
+    protected virtual float HoverFloatOffset => -2.5f * GlobalUIScale;
+    protected virtual float PressOffset      => 1.5f  * GlobalUIScale;
+
+    protected virtual Vector4  RestingBorder         => new(1f, 1f, 1f, 0.06f);
+    protected virtual Vector4  HoveredBorder         => KnownColor.DodgerBlue.ToVector4().WithW(0.8f);
+    protected virtual Vector4? SelectedBorder        => null;
+    protected virtual Vector4? CustomBackgroundColor => null;
 
     private Vector2 currentSize;
     private Vector2 sizeVelocity;
@@ -51,8 +65,14 @@ public abstract class CardComponentBase
 
         UpdateStates(isHovered);
 
-        var hoverOffset  = -2.5f * GlobalUIScale * hoverProgress;
-        var pressOffset  = 1.5f  * GlobalUIScale * pressProgress;
+        var hoverOffset = (EnableHoverAnimation ?
+                               HoverFloatOffset :
+                               0f) *
+                          hoverProgress;
+        var pressOffset = (EnablePressAnimation ?
+                               PressOffset :
+                               0f) *
+                          pressProgress;
         var visualOffset = new Vector2(0f, hoverOffset + pressOffset);
 
         var clipMinY = drawList.GetClipRectMin().Y;
@@ -69,7 +89,7 @@ public abstract class CardComponentBase
         using (ImRaii.Disabled(DisableContent))
         using (ImRaii.Group())
         {
-            if (context.FrameWidth > 0f)
+            if (WrapInContentTable && context.FrameWidth > 0f)
             {
                 ImGui.Dummy(context.Padding with { X = context.FrameWidth });
 
@@ -112,42 +132,83 @@ public abstract class CardComponentBase
 
         drawList.ChannelsSetCurrent(BACKGROUND_CHANNEL);
 
-        var baseColor = ImGui.GetColorU32(ImGuiCol.ChildBg).ToVector4();
-        var restingBg = baseColor + new Vector4(0.02f, 0.02f, 0.02f, -0.1f);
-        var hoveredBg = restingBg - new Vector4(0.03f, 0.03f, 0.03f, 0f);
-        var bgColor   = Vector4.Lerp(restingBg, hoveredBg, hoverProgress);
+        Vector4 restingBg;
+        Vector4 hoveredBg;
 
-        var borderColor = Vector4.Lerp(RestingBorder, HoveredBorder, hoverProgress);
+        if (CustomBackgroundColor.HasValue)
+        {
+            var customBase = CustomBackgroundColor.Value;
+            restingBg = customBase;
+            hoveredBg = customBase + new Vector4(0.04f, 0.04f, 0.04f, 0.05f);
+        }
+        else
+        {
+            var baseColor = ImGui.GetColorU32(ImGuiCol.ChildBg).ToVector4();
+            restingBg = baseColor + new Vector4(0.02f, 0.02f, 0.02f, -0.1f);
+            hoveredBg = restingBg - new Vector4(0.03f, 0.03f, 0.03f, 0f);
+        }
 
-        if (hoverProgress > 0.01f)
+        var bgColor = Vector4.Lerp(restingBg, hoveredBg, hoverProgress);
+
+        var activeBorder = IsSelected && SelectedBorder.HasValue ?
+                               SelectedBorder.Value :
+                               Vector4.Lerp(RestingBorder, HoveredBorder, hoverProgress);
+
+        if (EnableGlow && hoverProgress > 0.01f)
         {
             var shadowColor = new Vector4(0f, 0f, 0f, 0.18f * hoverProgress);
             var shadowSize  = 12f * GlobalUIScale * hoverProgress;
             ImGuiOm.AddGlowRect(drawList, visualMin, visualMax, shadowColor.ToUInt(), Rounding, shadowSize, 10, 0.20f);
 
-            var glowColor = HoveredBorder;
+            var glowColor = IsSelected && SelectedBorder.HasValue ?
+                                SelectedBorder.Value :
+                                HoveredBorder;
             glowColor.W = 0.16f * hoverProgress;
             var glowSize = 6f * GlobalUIScale * hoverProgress;
             ImGuiOm.AddGlowRect(drawList, visualMin, visualMax, glowColor.ToUInt(), Rounding, glowSize, 10);
         }
 
         drawList.AddRectFilled(visualMin, visualMax, bgColor.ToUInt(), Rounding);
-        drawList.AddRect(visualMin, visualMax, borderColor.ToUInt(), Rounding, ImDrawFlags.None, 1f);
-
-        var topHighlightColor = new Vector4(1f, 1f, 1f, 0.08f + (0.12f * hoverProgress));
-        drawList.AddLine
+        drawList.AddRect
         (
-            new Vector2(visualMin.X                 + Rounding, visualMin.Y + 0.5f),
-            new Vector2(visualMin.X + currentSize.X - Rounding, visualMin.Y + 0.5f),
-            topHighlightColor.ToUInt(),
-            1f
+            visualMin,
+            visualMax,
+            activeBorder.ToUInt(),
+            Rounding,
+            ImDrawFlags.None,
+            IsSelected ?
+                1.5f * GlobalUIScale :
+                1f
         );
+
+        if (EnableTopHighlight)
+        {
+            var topHighlightColor = new Vector4(1f, 1f, 1f, 0.08f + (0.12f * hoverProgress));
+            drawList.AddLine
+            (
+                new Vector2(visualMin.X                 + Rounding, visualMin.Y + 0.5f),
+                new Vector2(visualMin.X + currentSize.X - Rounding, visualMin.Y + 0.5f),
+                topHighlightColor.ToUInt(),
+                1f
+            );
+        }
 
         drawList.ChannelsMerge();
 
         DrawAfterFrame(context, visualMax, isHovered);
 
-        ImGui.SetCursorScreenPos(frameMin + new Vector2(0f, currentSize.Y + ImGui.GetStyle().ItemSpacing.Y));
+        switch (CursorAdvance)
+        {
+            case CardCursorAdvance.Bottom:
+                ImGui.SetCursorScreenPos(frameMin + new Vector2(0f, currentSize.Y + ImGui.GetStyle().ItemSpacing.Y));
+                break;
+            case CardCursorAdvance.Right:
+                ImGui.SetCursorScreenPos(frameMin + new Vector2(currentSize.X + ImGui.GetStyle().ItemSpacing.X, 0f));
+                break;
+            case CardCursorAdvance.None:
+            default:
+                break;
+        }
 
         if (DrawDisabledMask)
             drawList.AddRectFilled(visualMin, visualMax, KnownColor.Black.ToVector4().WithW(0.2f).ToUInt(), Rounding);
@@ -159,15 +220,33 @@ public abstract class CardComponentBase
     protected static int GetContentChannel() =>
         CONTENT_CHANNEL;
 
-    protected virtual void DrawAfterFrame(CardDrawContext context, Vector2 frameMax, bool isHovered) { }
+    protected virtual void DrawAfterFrame
+    (
+        CardDrawContext context,
+        Vector2         frameMax,
+        bool            isHovered
+    )
+    {
+    }
 
     protected abstract CardDrawContext CreateContext();
 
-    protected abstract void DrawContent(CardDrawContext context, bool isHovered);
+    protected abstract void DrawContent
+    (
+        CardDrawContext context,
+        bool            isHovered
+    );
 
-    protected abstract Vector2 GetTargetSize(CardDrawContext context, Vector2 contentRectSize);
+    protected abstract Vector2 GetTargetSize
+    (
+        CardDrawContext context,
+        Vector2         contentRectSize
+    );
 
-    private void UpdateCurrentSize(Vector2 targetSize)
+    private void UpdateCurrentSize
+    (
+        Vector2 targetSize
+    )
     {
         var dt = Math.Min(ImGui.GetIO().DeltaTime, 0.05f);
 
@@ -203,11 +282,16 @@ public abstract class CardComponentBase
         }
     }
 
-    private void UpdateStates(bool isHovered)
+    private void UpdateStates
+    (
+        bool isHovered
+    )
     {
         var dt = Math.Min(ImGui.GetIO().DeltaTime, 0.05f);
 
-        var targetHover       = isHovered ? 1f : 0f;
+        var targetHover = isHovered ?
+                              1f :
+                              0f;
         var hoverDisplacement = hoverProgress                          - targetHover;
         var hoverForce        = (-HOVER_STIFFNESS * hoverDisplacement) - (HOVER_DAMPING * hoverVelocity);
         hoverVelocity += hoverForce    * dt;
@@ -221,8 +305,10 @@ public abstract class CardComponentBase
 
         hoverProgress = Math.Clamp(hoverProgress, 0f, 1f);
 
-        var isPressed         = EnablePressAnimation && isHovered && ImGui.IsMouseDown(ImGuiMouseButton.Left);
-        var targetPress       = isPressed ? 1f : 0f;
+        var isPressed = EnablePressAnimation && isHovered && ImGui.IsMouseDown(ImGuiMouseButton.Left);
+        var targetPress = isPressed ?
+                              1f :
+                              0f;
         var pressDisplacement = pressProgress                          - targetPress;
         var pressForce        = (-PRESS_STIFFNESS * pressDisplacement) - (PRESS_DAMPING * pressVelocity);
         pressVelocity += pressForce    * dt;
