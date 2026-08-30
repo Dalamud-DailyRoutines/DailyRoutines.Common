@@ -37,7 +37,7 @@ public abstract class CardComponentBase
     protected virtual float HoverFloatOffset => -2.5f * GlobalUIScale;
     protected virtual float PressOffset      => 1.5f  * GlobalUIScale;
 
-    protected virtual Vector4  RestingBorder         => new(1f, 1f, 1f, 0.06f);
+    protected virtual Vector4  RestingBorder         => KnownColor.White.ToVector4().WithW(0.06f);
     protected virtual Vector4  HoveredBorder         => KnownColor.DodgerBlue.ToVector4().WithW(0.8f);
     protected virtual Vector4? SelectedBorder        => null;
     protected virtual Vector4? CustomBackgroundColor => null;
@@ -139,13 +139,13 @@ public abstract class CardComponentBase
         {
             var customBase = CustomBackgroundColor.Value;
             restingBg = customBase;
-            hoveredBg = customBase + new Vector4(0.04f, 0.04f, 0.04f, 0.05f);
+            hoveredBg = customBase.WithW(MathF.Min(1f, customBase.W * 1.3f));
         }
         else
         {
             var baseColor = ImGui.GetColorU32(ImGuiCol.ChildBg).ToVector4();
-            restingBg = baseColor + new Vector4(0.02f, 0.02f, 0.02f, -0.1f);
-            hoveredBg = restingBg - new Vector4(0.03f, 0.03f, 0.03f, 0f);
+            restingBg = baseColor.WithW(MathF.Max(0f, baseColor.W - 0.1f));
+            hoveredBg = baseColor.WithW(MathF.Max(0f, baseColor.W - 0.05f));
         }
 
         var bgColor = Vector4.Lerp(restingBg, hoveredBg, hoverProgress);
@@ -156,7 +156,7 @@ public abstract class CardComponentBase
 
         if (EnableGlow && hoverProgress > 0.01f)
         {
-            var shadowColor = new Vector4(0f, 0f, 0f, 0.18f * hoverProgress);
+            var shadowColor = KnownColor.Black.ToVector4().WithW(0.18f * hoverProgress);
             var shadowSize  = 12f * GlobalUIScale * hoverProgress;
             ImGuiOm.AddGlowRect(drawList, visualMin, visualMax, shadowColor.ToUInt(), Rounding, shadowSize, 10, 0.20f);
 
@@ -183,7 +183,7 @@ public abstract class CardComponentBase
 
         if (EnableTopHighlight)
         {
-            var topHighlightColor = new Vector4(1f, 1f, 1f, 0.08f + (0.12f * hoverProgress));
+            var topHighlightColor = KnownColor.White.ToVector4().WithW(0.08f + (0.12f * hoverProgress));
             drawList.AddLine
             (
                 new Vector2(visualMin.X                 + Rounding, visualMin.Y + 0.5f),
