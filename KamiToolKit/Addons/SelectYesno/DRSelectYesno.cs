@@ -1,4 +1,5 @@
 using System.Numerics;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using KamiToolKit.BaseTypes;
 using KamiToolKit.Classes;
@@ -135,7 +136,13 @@ public sealed unsafe class DRSelectYesno : NativeAddon
             return;
 
         PromptNode.AlignmentType = dialogOptions.PromptAlignment;
-        PromptNode.String        = dialogOptions.Prompt;
+
+        using var rented  = new RentedSeStringBuilder();
+        var       builder = rented.Builder;
+        builder.PushColorType(7)
+               .Append(dialogOptions.Prompt)
+               .PopColorType();
+        PromptNode.String = builder.ToReadOnlySeString();
 
         SetButtonText(PrimaryButton,   dialogOptions.YesButtonText, 3);
         SetButtonText(SecondaryButton, dialogOptions.NoButtonText,  4);
