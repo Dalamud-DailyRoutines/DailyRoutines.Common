@@ -5,6 +5,7 @@ using KamiToolKit.BaseTypes;
 using KamiToolKit.Classes;
 using KamiToolKit.Nodes;
 using Lumina.Text.ReadOnly;
+using OmenTools.Interop.Game.Models;
 
 namespace DailyRoutines.Common.KamiToolKit.Addons.SelectYesno;
 
@@ -144,6 +145,8 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         if (PromptNode is null || PrimaryButton is null || SecondaryButton is null)
             return;
 
+        InternalAddon->BlockedParentId = dialogOptions.BlockedParentID;
+        
         PromptNode.AlignmentType = dialogOptions.PromptAlignment;
 
         using var rented  = new RentedSeStringBuilder();
@@ -187,7 +190,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
 
         const float BUTTON_WIDTH = 100.0f;
         const float BUTTON_GAP   = 8.0f;
-        
+
         var totalButtonWidth = buttonCount == 2 ?
                                    (BUTTON_WIDTH * 2.0f) + BUTTON_GAP :
                                    BUTTON_WIDTH;
@@ -224,11 +227,36 @@ public sealed unsafe class DRSelectYesno : NativeAddon
 
         if (InternalAddon is not null)
             InternalAddon->FocusNode = showPrimary ? PrimaryButton : showSecondary ? SecondaryButton : RootNode;
-        
+
         var screenSize  = (Vector2)AtkStage.Instance()->ScreenSize;
         var maxPosition = Vector2.Max(Vector2.Zero, screenSize - Size);
-        var position    = options.Position ?? maxPosition / 2.0f;
+        var position = options.Position is { } addonPosition ?
+                           Vector2.Clamp(GetWindowPosition(addonPosition, Size), Vector2.Zero, maxPosition) :
+                           maxPosition / 2.0f;
         openPosition = position;
+    }
+
+    private static Vector2 GetWindowPosition
+    (
+        AddonPosition addonPosition,
+        Vector2       addonSize
+    )
+    {
+        var offset = addonPosition.Alignment switch
+        {
+            AddonPositionAlignment.TopLeft     => Vector2.Zero,
+            AddonPositionAlignment.TopCenter   => new(addonSize.X / 2.0f, 0.0f),
+            AddonPositionAlignment.TopRight    => addonSize with { Y = 0.0f },
+            AddonPositionAlignment.RightCenter => addonSize with { Y = addonSize.Y / 2.0f },
+            AddonPositionAlignment.BottomRight => new(addonSize.X, addonSize.Y),
+            AddonPositionAlignment.BottomCenter => addonSize with { X = addonSize.X / 2.0f },
+            AddonPositionAlignment.BottomLeft  => addonSize with { X = 0.0f },
+            AddonPositionAlignment.LeftCenter  => new(0.0f, addonSize.Y / 2.0f),
+            AddonPositionAlignment.Center      => new(addonSize.X / 2.0f, addonSize.Y / 2.0f),
+            _                                  => Vector2.Zero
+        };
+
+        return addonPosition.Position - offset;
     }
 
     private static void SetButtonText
@@ -264,7 +292,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         if ((options.Buttons & ~DRSelectYesnoButtons.Both) != 0)
             throw new ArgumentOutOfRangeException(nameof(options.Buttons));
 
-        if (options.Position is { } position && (!float.IsFinite(position.X) || !float.IsFinite(position.Y)))
+        if (options.Position?.Position is { } position && (!float.IsFinite(position.X) || !float.IsFinite(position.Y)))
             throw new ArgumentOutOfRangeException(nameof(options.Position));
     }
 

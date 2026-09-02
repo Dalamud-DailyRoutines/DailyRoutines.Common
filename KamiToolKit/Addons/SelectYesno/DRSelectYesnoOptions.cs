@@ -1,6 +1,6 @@
-using System.Numerics;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Text.ReadOnly;
+using OmenTools.Interop.Game.Models;
 
 namespace DailyRoutines.Common.KamiToolKit.Addons.SelectYesno;
 
@@ -18,9 +18,11 @@ public sealed record DRSelectYesnoOptions
 
     public bool RespectCloseAll { get; init; } = true;
 
-    public Vector2? Position { get; init; }
+    public AddonPosition? Position { get; init; }
 
     public int OpenSoundEffectID { get; init; } = 23;
+    
+    public ushort BlockedParentID { get; init; }
 
     public Action<DRSelectYesno, DRSelectYesnoResult>? Callback { get; init; }
 }
