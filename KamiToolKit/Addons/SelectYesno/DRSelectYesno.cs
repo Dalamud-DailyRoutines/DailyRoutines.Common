@@ -5,6 +5,7 @@ using KamiToolKit.BaseTypes;
 using KamiToolKit.Classes;
 using KamiToolKit.Nodes;
 using Lumina.Text.ReadOnly;
+using OmenTools.Dalamud;
 
 namespace DailyRoutines.Common.KamiToolKit.Addons.SelectYesno;
 
@@ -23,6 +24,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
             InternalName              = "DRSelectYesno",
             Title                     = string.Empty,
             Size                      = new Vector2(400.0f, 96.0f),
+            OpenInBounds              = true,
             OpenWindowSoundEffectId   = options.OpenSoundEffectID,
             RespectCloseAll           = options.RespectCloseAll,
             DisableClamping           = false,
@@ -68,7 +70,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
 
         PromptNode = new TextNode
         {
-            Size             = new Vector2(344.0f, 0.0f),
+            Size             = new(344.0f, 0.0f),
             TextColor        = ColorHelper.GetColor(8),
             TextOutlineColor = ColorHelper.GetColor(7),
             FontSize         = 14,
@@ -81,14 +83,14 @@ public sealed unsafe class DRSelectYesno : NativeAddon
 
         PrimaryButton = new TextButtonNode
         {
-            Size    = new Vector2(100.0f, 28.0f),
+            Size    = new(100.0f, 28.0f),
             OnClick = () => Select(DRSelectYesnoResult.Yes)
         };
         PrimaryButton.AttachNode(this);
 
         SecondaryButton = new TextButtonNode
         {
-            Size    = new Vector2(100.0f, 28.0f),
+            Size    = new(100.0f, 28.0f),
             OnClick = () => Select(DRSelectYesnoResult.No)
         };
         SecondaryButton.AttachNode(this);
@@ -154,7 +156,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         PrimaryButton.IsVisible   = showPrimary;
         SecondaryButton.IsVisible = showSecondary;
 
-        PromptNode.Size = new Vector2(344.0f, 0.0f);
+        PromptNode.Size = new(344.0f, 0.0f);
         var promptHeight = PromptNode.GetTextDrawSize().Y;
 
         var buttonCount = (showPrimary ?
@@ -176,11 +178,12 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         PromptNode.Size     = new Vector2(344.0f, promptHeight);
         PromptNode.Position = new Vector2(28.0f,  20.0f);
 
-        var buttonWidth = 100.0f;
-        var buttonGap   = 8.0f;
+        const float BUTTON_WIDTH = 100.0f;
+        const float BUTTON_GAP   = 8.0f;
+        
         var totalButtonWidth = buttonCount == 2 ?
-                                   (buttonWidth * 2.0f) + buttonGap :
-                                   buttonWidth;
+                                   (BUTTON_WIDTH * 2.0f) + BUTTON_GAP :
+                                   BUTTON_WIDTH;
         var buttonLeft = (400.0f - totalButtonWidth) / 2.0f;
         var buttonY    = height - buttonHeight - 18.0f;
 
@@ -201,7 +204,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
                                 1 :
                                 index + 2;
 
-            button.Position = new Vector2(buttonLeft + (index * (buttonWidth + buttonGap)), buttonY);
+            button.Position = new Vector2(buttonLeft + (index * (BUTTON_WIDTH + BUTTON_GAP)), buttonY);
             button.NavIndex = navigationIndex;
             button.NavLeft  = previousIndex;
             button.NavRight = nextIndex;
@@ -224,7 +227,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
     )
     {
         button.TextId = 0;
-        button.String = text ?? DService.Instance().SeStringEvaluator.EvaluateFromAddon(defaultTextID, []);
+        button.String = text ?? ISeStringEvaluator.Instance().EvaluateFromAddon(defaultTextID, []);
     }
 
     private void SetInitialPosition()
@@ -265,8 +268,9 @@ public sealed unsafe class DRSelectYesno : NativeAddon
     }
 
     private readonly DRSelectYesnoOptions options;
-    private TextNode?                         PromptNode      { get; set; }
-    private TextButtonNode?                   PrimaryButton   { get; set; }
-    private TextButtonNode?                   SecondaryButton { get; set; }
-    private bool                              hasResult;
+
+    private TextNode?       PromptNode      { get; set; }
+    private TextButtonNode? PrimaryButton   { get; set; }
+    private TextButtonNode? SecondaryButton { get; set; }
+    private bool            hasResult;
 }
