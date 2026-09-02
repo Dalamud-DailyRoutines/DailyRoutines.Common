@@ -145,6 +145,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         if (PromptNode is null || PrimaryButton is null || SecondaryButton is null)
             return;
 
+        InternalAddon->ParentId        = dialogOptions.ParentID;
         InternalAddon->BlockedParentId = dialogOptions.BlockedParentID;
         
         PromptNode.AlignmentType = dialogOptions.PromptAlignment;
@@ -231,7 +232,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         var screenSize  = (Vector2)AtkStage.Instance()->ScreenSize;
         var maxPosition = Vector2.Max(Vector2.Zero, screenSize - Size);
         var position = options.Position is { } addonPosition ?
-                           Vector2.Clamp(GetWindowPosition(addonPosition, Size), Vector2.Zero, maxPosition) :
+                           Vector2.Clamp(GetWindowPosition(addonPosition, RootNode.Node->GetNodeState().Size), Vector2.Zero, maxPosition) :
                            maxPosition / 2.0f;
         openPosition = position;
     }

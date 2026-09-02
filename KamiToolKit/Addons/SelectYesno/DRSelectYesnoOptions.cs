@@ -22,6 +22,8 @@ public sealed record DRSelectYesnoOptions
 
     public int OpenSoundEffectID { get; init; } = 23;
     
+    public ushort ParentID { get; init; }
+    
     public ushort BlockedParentID { get; init; }
 
     public Action<DRSelectYesno, DRSelectYesnoResult>? Callback { get; init; }
