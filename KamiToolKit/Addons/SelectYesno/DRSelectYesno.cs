@@ -5,7 +5,6 @@ using KamiToolKit.BaseTypes;
 using KamiToolKit.Classes;
 using KamiToolKit.Nodes;
 using Lumina.Text.ReadOnly;
-using OmenTools.Dalamud;
 
 namespace DailyRoutines.Common.KamiToolKit.Addons.SelectYesno;
 
@@ -96,7 +95,6 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         SecondaryButton.AttachNode(this);
 
         ApplyOptions(options);
-        SetInitialPosition();
     }
 
     protected override void OnHide
@@ -111,13 +109,22 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         options.Callback?.Invoke(this, DRSelectYesnoResult.Closed);
     }
 
+    protected override void OnUpdate
+    (
+        AtkUnitBase* addon
+    )
+    {
+        if (openPosition == null) return;
+
+        SetWindowPosition(openPosition.Value);
+        openPosition = null;
+    }
+
     protected override void OnFinalize
     (
         AtkUnitBase* addon
     )
     {
-        base.OnFinalize(addon);
-
         PromptNode      = null;
         PrimaryButton   = null;
         SecondaryButton = null;
@@ -217,6 +224,11 @@ public sealed unsafe class DRSelectYesno : NativeAddon
 
         if (InternalAddon is not null)
             InternalAddon->FocusNode = showPrimary ? PrimaryButton : showSecondary ? SecondaryButton : RootNode;
+        
+        var screenSize  = (Vector2)AtkStage.Instance()->ScreenSize;
+        var maxPosition = Vector2.Max(Vector2.Zero, screenSize - Size);
+        var position    = options.Position ?? maxPosition / 2.0f;
+        openPosition = position;
     }
 
     private static void SetButtonText
@@ -228,17 +240,6 @@ public sealed unsafe class DRSelectYesno : NativeAddon
     {
         button.TextId = 0;
         button.String = text ?? ISeStringEvaluator.Instance().EvaluateFromAddon(defaultTextID, []);
-    }
-
-    private void SetInitialPosition()
-    {
-        if (InternalAddon is null)
-            return;
-
-        var screenSize  = (Vector2)AtkStage.Instance()->ScreenSize;
-        var maxPosition = Vector2.Max(Vector2.Zero, screenSize - Size);
-        var position    = options.Position ?? maxPosition / 2.0f;
-        SetWindowPosition(Vector2.Clamp(position, Vector2.Zero, maxPosition));
     }
 
     private void Select
@@ -268,9 +269,10 @@ public sealed unsafe class DRSelectYesno : NativeAddon
     }
 
     private readonly DRSelectYesnoOptions options;
+    private          Vector2?             openPosition;
+    private          bool                 hasResult;
 
     private TextNode?       PromptNode      { get; set; }
     private TextButtonNode? PrimaryButton   { get; set; }
     private TextButtonNode? SecondaryButton { get; set; }
-    private bool            hasResult;
 }
