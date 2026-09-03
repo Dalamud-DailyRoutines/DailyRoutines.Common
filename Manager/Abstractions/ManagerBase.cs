@@ -30,7 +30,7 @@ public abstract class ManagerBase
     {
         get
         {
-            var directory = Path.Join(DService.Instance().PI.GetPluginConfigDirectory(), "Manager");
+            var directory = Path.Join(IDalamudPluginInterface.Instance().GetPluginConfigDirectory(), "Manager");
             Directory.CreateDirectory(directory);
             return Path.Join(directory, $"{GetType().Name}.json");
         }

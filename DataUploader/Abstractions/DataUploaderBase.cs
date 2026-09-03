@@ -20,7 +20,7 @@ public abstract class DataUploaderBase
     {
         get
         {
-            var directory = Path.Join(DService.Instance().PI.GetPluginConfigDirectory(), "DataUploader");
+            var directory = Path.Join(IDalamudPluginInterface.Instance().GetPluginConfigDirectory(), "DataUploader");
             Directory.CreateDirectory(directory);
             return Path.Join(directory, $"{GetType().Name}.json");
         }
@@ -217,8 +217,8 @@ public abstract class DataUploaderBase
     
     protected static bool IsPlayerReady() =>
         GameState.IsLoggedIn                                &&
-        DService.Instance().ObjectTable.LocalPlayer != null &&
-        !DService.Instance().Condition.IsBoundByDuty;
+        IObjectTable.Instance().LocalPlayer != null &&
+        !ICondition.Instance().IsBoundByDuty;
 
     #region 常量
 

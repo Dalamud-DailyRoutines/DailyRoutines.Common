@@ -322,12 +322,12 @@ public sealed class ModuleCompiler
 
         AddReferences(builder, seenFileNames, Path.GetDirectoryName(typeof(object).Assembly.Location), "系统基础程序集目录",           SearchOption.TopDirectoryOnly);
         AddReferences(builder, seenFileNames, Path.GetDirectoryName(typeof(Form).Assembly.Location),   "Windows Forms 程序集目录", SearchOption.TopDirectoryOnly);
-        AddReferences(builder, seenFileNames, DService.Instance().PI.AssemblyLocation.DirectoryName,   "插件程序集目录",             SearchOption.AllDirectories);
+        AddReferences(builder, seenFileNames, IDalamudPluginInterface.Instance().AssemblyLocation.DirectoryName,   "插件程序集目录",             SearchOption.AllDirectories);
         AddReferences
         (
             builder,
             seenFileNames,
-            Path.GetDirectoryName(DService.Instance().PI.GetType().Assembly.Location),
+            Path.GetDirectoryName(IDalamudPluginInterface.Instance().GetType().Assembly.Location),
             "插件运行时类型目录",
             SearchOption.AllDirectories
         );

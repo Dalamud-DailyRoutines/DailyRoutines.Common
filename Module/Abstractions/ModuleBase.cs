@@ -224,13 +224,13 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
     #region 配置
 
     public string ConfigFilePath =>
-        Path.Join(DService.Instance().PI.GetPluginConfigDirectory(), $"{ModuleName}.json");
+        Path.Join(IDalamudPluginInterface.Instance().GetPluginConfigDirectory(), $"{ModuleName}.json");
 
     public string ConfigDirectoryPath
     {
         get
         {
-            var path = Path.Join(DService.Instance().PI.GetPluginConfigDirectory(), "Module", $"{ModuleName}");
+            var path = Path.Join(IDalamudPluginInterface.Instance().GetPluginConfigDirectory(), "Module", $"{ModuleName}");
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -258,7 +258,7 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
 
                 if (!string.IsNullOrWhiteSpace(prevModuleName))
                 {
-                    var prevConfigFilePath = Path.Join(DService.Instance().PI.GetPluginConfigDirectory(), $"{prevModuleName}.json");
+                    var prevConfigFilePath = Path.Join(IDalamudPluginInterface.Instance().GetPluginConfigDirectory(), $"{prevModuleName}.json");
 
                     if (File.Exists(prevConfigFilePath))
                     {

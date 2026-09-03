@@ -12,7 +12,7 @@ public abstract class NotificationChannelBase
     {
         get
         {
-            var directory = Path.Join(DService.Instance().PI.GetPluginConfigDirectory(), "Notification");
+            var directory = Path.Join(IDalamudPluginInterface.Instance().GetPluginConfigDirectory(), "Notification");
             Directory.CreateDirectory(directory);
             return Path.Join(directory, $"{GetType().Name}.json");
         }
@@ -109,7 +109,7 @@ public abstract class NotificationChannelBase
             if (!string.IsNullOrEmpty(field))
                 return field;
             
-            var path = Path.Join(DService.Instance().PI.GetPluginConfigDirectory(), "Notification", "Cache");
+            var path = Path.Join(IDalamudPluginInterface.Instance().GetPluginConfigDirectory(), "Notification", "Cache");
             Directory.CreateDirectory(path);
             return field = path;
         }

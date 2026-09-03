@@ -32,9 +32,9 @@ public abstract unsafe class AttachedAddon : NativeAddon
         runSetupForCurrentHostAddon = hostAddonEvents.Contains(AddonEvent.PostSetup);
 
         foreach (var eventType in new[] { AddonEvent.PostDraw, AddonEvent.PreFinalize }.Concat(hostAddonEvents).Distinct())
-            DService.Instance().AddonLifecycle.RegisterListener(eventType, hostAddon, OnHostAddonLifecycle);
+            IAddonLifecycle.Instance().RegisterListener(eventType, hostAddon, OnHostAddonLifecycle);
 
-        DService.Instance().Framework.RunOnFrameworkThread
+        IFramework.Instance().RunOnFrameworkThread
         (() =>
             {
                 if (!HostAddon->IsAddonAndNodesReady())
@@ -51,7 +51,7 @@ public abstract unsafe class AttachedAddon : NativeAddon
 
     public override void Dispose()
     {
-        DService.Instance().AddonLifecycle.UnregisterListener(OnHostAddonLifecycle);
+        IAddonLifecycle.Instance().UnregisterListener(OnHostAddonLifecycle);
 
         isClosingAddonOnly = true;
         base.Dispose();
