@@ -107,7 +107,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
             return;
 
         hasResult = true;
-        options.Callback?.Invoke(this, DRSelectYesnoResult.Closed);
+        IFramework.Instance().RunOnTick(() => options.Callback?.Invoke(this, DRSelectYesnoResult.Closed), delayTicks: 1);
     }
 
     protected override void OnUpdate
