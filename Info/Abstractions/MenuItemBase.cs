@@ -7,6 +7,7 @@ using MenuItem = Dalamud.Game.Gui.ContextMenu.MenuItem;
 
 namespace DailyRoutines.Common.Info.Abstractions;
 
+[Obsolete("请使用 OmenTools.OmenService.ContextMenuEntry")]
 public abstract class MenuItemBase
 {
     private Lazy<MenuItem> MenuItem => new
