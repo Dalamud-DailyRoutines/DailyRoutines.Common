@@ -70,13 +70,12 @@ public sealed unsafe class DRSelectYesno : NativeAddon
 
         PromptNode = new TextNode
         {
-            Size             = new(344.0f, 0.0f),
-            TextColor        = ColorHelper.GetColor(8),
-            TextOutlineColor = ColorHelper.GetColor(7),
-            FontSize         = 14,
-            FontType         = FontType.Axis,
-            LineSpacing      = 18,
-            AlignmentType    = options.PromptAlignment
+            Size          = new(344.0f, 0.0f),
+            TextColor     = ColorHelper.GetColor(1),
+            FontSize      = 14,
+            FontType      = FontType.Axis,
+            LineSpacing   = 18,
+            AlignmentType = options.PromptAlignment
         };
         PromptNode.AddTextFlags(TextFlags.WordWrap, TextFlags.MultiLine);
         PromptNode.AttachNode(this);
@@ -149,13 +148,7 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         InternalAddon->BlockedParentId = dialogOptions.BlockedParentID;
         
         PromptNode.AlignmentType = dialogOptions.PromptAlignment;
-
-        using var rented  = new RentedSeStringBuilder();
-        var       builder = rented.Builder;
-        builder.PushColorType(7)
-               .Append(dialogOptions.Prompt)
-               .PopColorType();
-        PromptNode.String = builder.ToReadOnlySeString();
+        PromptNode.String        = dialogOptions.Prompt;
 
         SetButtonText(PrimaryButton,   dialogOptions.YesButtonText, 3);
         SetButtonText(SecondaryButton, dialogOptions.NoButtonText,  4);
