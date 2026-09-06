@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using DailyRoutines.Common.Extensions;
 using Dalamud.Game.Gui.ContextMenu;
