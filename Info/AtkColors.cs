@@ -6,6 +6,15 @@ namespace DailyRoutines.Common.Info;
 
 public static class AtkColors
 {
+    /// <summary>列表列头：在绝大多数主题下为浅灰色文字与白色描边</summary>
+    public static AtkColor ListHeader { get; } = new(21, 7);
+    
+    /// <summary>列表行文本：在绝大多数主题下为浅灰色文字与白色描边</summary>
+    public static AtkColor ListRow { get; } = new(8, 7);
+    
+    /// <summary>列表页脚：在绝大多数主题下为浅灰色文字与白色描边</summary>
+    public static AtkColor ListFooter { get; } = new(3, 7);
+    
     /// <summary>标签：在绝大多数主题下为棕色文字与白色描边</summary>
     public static AtkColor Label { get; } = new(8, 7);
     
