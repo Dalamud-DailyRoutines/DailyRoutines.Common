@@ -12,15 +12,20 @@ public sealed class ModuleInfo
     public          string[]       Author              { get; init; } = ["AtmoOmen"];
     public          string         ReportURL           { get; init; } = "https://discord.com/channels/1258981591124938762/1464230937653940316";
     public          string[]       ModulesPrerequisite { get; init; } = [];
-    public          string[]       ModulesRecommend    { get; init; } = [];
+    public          string[]       ModulesPair         { get; init; } = [];
     public          string[]       ModulesConflict     { get; init; } = [];
     public          string[]       PreviewImageURL     { get; init; } = [];
 
-    public string[] SupportUrls => Author
-                                   .Select(x => AuthorSupportLinks.TryGetValue(x, out var link)
-                                                    ? link.SupportLink
-                                                    : string.Empty)
-                                   .Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+    public string[] SupportUrls =>
+    [
+        .. Author
+           .Select
+           (x => AuthorSupportLinks.TryGetValue(x, out var link) ?
+                     link.SupportLink :
+                     string.Empty
+           )
+           .Where(x => !string.IsNullOrWhiteSpace(x))
+    ];
 
     public override string ToString() => Title;
 

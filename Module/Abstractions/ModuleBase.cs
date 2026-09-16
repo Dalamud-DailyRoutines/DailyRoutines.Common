@@ -9,7 +9,6 @@ using Dalamud.Hooking;
 using Newtonsoft.Json;
 using OmenTools.Dalamud;
 using OmenTools.Interop.Game;
-using OmenTools.OmenService;
 using OmenTools.Threading.TaskHelper;
 
 namespace DailyRoutines.Common.Module.Abstractions;
@@ -30,7 +29,7 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
 
     public string           ModuleName       { get; private set; }
     public List<ModuleBase> PrecedingModules { get; set; }
-    public List<ModuleBase> RecommendModules { get; set; }
+    public List<ModuleBase> PairModules      { get; set; }
     public List<ModuleBase> ConflictModules  { get; set; }
     public bool             WithConfigUI     { get; private set; }
     public bool             WithConfig       { get; private set; }
