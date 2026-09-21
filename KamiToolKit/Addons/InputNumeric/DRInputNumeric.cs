@@ -31,6 +31,8 @@ public sealed unsafe class DRInputNumeric : NativeAddon
             EnableContextMenu         = false,
             DisableScaleContextOption = true,
             RememberClosePosition     = false,
+            ParentAddonId             = options.ParentID,
+            BlockedParentAddonId      = options.BlockedParentID,
             CreateWindowNode = () =>
             {
                 var window = new WindowNode();
@@ -154,9 +156,6 @@ public sealed unsafe class DRInputNumeric : NativeAddon
     {
         if (PromptNode is null || InputNode is null || ConfirmButton is null || CancelButton is null)
             return;
-
-        InternalAddon->ParentId        = dialogOptions.ParentID;
-        InternalAddon->BlockedParentId = dialogOptions.BlockedParentID;
 
         PromptNode.AlignmentType = dialogOptions.PromptAlignment;
         PromptNode.String        = dialogOptions.Prompt;

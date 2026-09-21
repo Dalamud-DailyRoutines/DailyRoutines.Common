@@ -31,6 +31,8 @@ public sealed unsafe class DRSelectYesno : NativeAddon
             EnableContextMenu         = false,
             DisableScaleContextOption = true,
             RememberClosePosition     = false,
+            ParentAddonId             = options.ParentID,
+            BlockedParentAddonId      = options.BlockedParentID,
             CreateWindowNode = () =>
             {
                 var window = new WindowNode();
@@ -144,9 +146,6 @@ public sealed unsafe class DRSelectYesno : NativeAddon
         if (PromptNode is null || PrimaryButton is null || SecondaryButton is null)
             return;
 
-        InternalAddon->ParentId        = dialogOptions.ParentID;
-        InternalAddon->BlockedParentId = dialogOptions.BlockedParentID;
-        
         PromptNode.AlignmentType = dialogOptions.PromptAlignment;
         PromptNode.String        = dialogOptions.Prompt;
 
