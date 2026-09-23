@@ -32,6 +32,9 @@ public static class AtkColors
 
     /// <summary>强调值：在绝大多数主题下为深棕色文字与浅粉色描边</summary>
     public static AtkColor ValueEmphasize { get; } = new(64, 65);
+    
+    /// <summary>目标列表内文本：在绝大多数主题下为白色文字与米白色描边</summary>
+    public static AtkColor TargetText { get; } = new(1, 23);
 
     public readonly unsafe struct AtkColor
     (
