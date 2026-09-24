@@ -26,7 +26,11 @@ public abstract unsafe class AttachedAddon : NativeAddon
 
     private bool isClosingAddonOnly;
 
-    protected AttachedAddon(string hostAddon, params AddonEvent[] hostAddonEvents)
+    protected AttachedAddon
+    (
+        string              hostAddon,
+        params AddonEvent[] hostAddonEvents
+    )
     {
         hostAddonName               = hostAddon;
         runSetupForCurrentHostAddon = hostAddonEvents.Contains(AddonEvent.PostSetup);
@@ -34,7 +38,7 @@ public abstract unsafe class AttachedAddon : NativeAddon
         foreach (var eventType in new[] { AddonEvent.PostDraw, AddonEvent.PreFinalize }.Concat(hostAddonEvents).Distinct())
             IAddonLifecycle.Instance().RegisterListener(eventType, hostAddon, OnHostAddonLifecycle);
 
-        IFramework.Instance().RunOnFrameworkThread
+        IFramework.Instance().RunOnTick
         (() =>
             {
                 if (!HostAddon->IsAddonAndNodesReady())
@@ -57,16 +61,39 @@ public abstract unsafe class AttachedAddon : NativeAddon
         base.Dispose();
     }
 
-    protected virtual void OnHostAddon(AddonEvent type, AddonArgs? args) { }
+    protected virtual void OnHostAddon
+    (
+        AddonEvent type,
+        AddonArgs? args
+    )
+    {
+    }
 
-    protected virtual void OnAttachedAddonUpdate(AtkUnitBase* addon, AtkUnitBase* hostAddon) { }
+    protected virtual void OnAttachedAddonUpdate
+    (
+        AtkUnitBase* addon,
+        AtkUnitBase* hostAddon
+    )
+    {
+    }
 
-    protected virtual void OnAttachedAddonFinalize(AtkUnitBase* addon) { }
+    protected virtual void OnAttachedAddonFinalize
+    (
+        AtkUnitBase* addon
+    )
+    {
+    }
 
-    protected virtual bool CanCloseHostAddon(AtkUnitBase* hostAddon) =>
+    protected virtual bool CanCloseHostAddon
+    (
+        AtkUnitBase* hostAddon
+    ) =>
         hostAddon != null && hostAddon->IsVisible;
 
-    protected sealed override void OnUpdate(AtkUnitBase* addon)
+    protected sealed override void OnUpdate
+    (
+        AtkUnitBase* addon
+    )
     {
         var hostAddon = HostAddon;
 
@@ -101,7 +128,10 @@ public abstract unsafe class AttachedAddon : NativeAddon
         OnAttachedAddonUpdate(addon, hostAddon);
     }
 
-    protected sealed override void OnFinalize(AtkUnitBase* addon)
+    protected sealed override void OnFinalize
+    (
+        AtkUnitBase* addon
+    )
     {
         OnAttachedAddonFinalize(addon);
 
@@ -117,7 +147,11 @@ public abstract unsafe class AttachedAddon : NativeAddon
         hostAddon->Close(true);
     }
 
-    private void OnHostAddonLifecycle(AddonEvent type, AddonArgs? args)
+    private void OnHostAddonLifecycle
+    (
+        AddonEvent type,
+        AddonArgs? args
+    )
     {
         OnHostAddon(type, args);
 
@@ -146,7 +180,7 @@ public abstract unsafe class AttachedAddon : NativeAddon
 
         Open();
     }
-    
+
     public enum AttachedAddonPosition
     {
         LeftTop,
