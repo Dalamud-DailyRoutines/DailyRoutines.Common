@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 using DailyRoutines.Common.Interface.Windows;
@@ -40,19 +39,34 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
 
     #region 模块控制
 
-    public void Load(bool affectConfig = false) =>
+    public void Load
+    (
+        bool affectConfig = false
+    ) =>
         _ = LoadAsync(affectConfig);
 
-    public Task LoadAsync(bool affectConfig = false) =>
+    public Task LoadAsync
+    (
+        bool affectConfig = false
+    ) =>
         ManagerHost.Current.LoadAsync(this, affectConfig);
 
-    public void Unload(bool affectConfig = false) =>
+    public void Unload
+    (
+        bool affectConfig = false
+    ) =>
         _ = UnloadAsync(affectConfig);
 
-    public Task UnloadAsync(bool affectConfig = false) =>
+    public Task UnloadAsync
+    (
+        bool affectConfig = false
+    ) =>
         ManagerHost.Current.UnloadAsync(this, affectConfig);
 
-    public void ToggleOverlayConfig(bool? isEnabled = null)
+    public void ToggleOverlayConfig
+    (
+        bool? isEnabled = null
+    )
     {
         if (!WithConfigUI) return;
         OverlayConfig ??= new(this);
@@ -67,13 +81,19 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
 
     public override string ToString() => ModuleIdentifier;
 
-    public bool Equals(ModuleBase? other)
+    public bool Equals
+    (
+        ModuleBase? other
+    )
     {
         if (other is null) return false;
         return ModuleGUID == other.ModuleGUID;
     }
 
-    public override bool Equals(object? obj) => Equals(obj as ModuleBase);
+    public override bool Equals
+    (
+        object? obj
+    ) => Equals(obj as ModuleBase);
 
     public override int GetHashCode() => ModuleGUID.GetHashCode();
 
@@ -194,7 +214,7 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
 
     private void BaseInit()
     {
-        CleanupDelegates.GetOrAdd(GetType(), GenerateCleanupDelegate);
+        cleanupAction = GenerateCleanupDelegate(GetType());
         IPCAttributeRegistry.RegObjectIPCs(this);
     }
 
@@ -214,8 +234,8 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
         TaskHelper?.Dispose();
         TaskHelper = null;
 
-        if (CleanupDelegates.TryGetValue(GetType(), out var action))
-            action?.Invoke(this);
+        cleanupAction?.Invoke(this);
+        cleanupAction = null;
     }
 
     #endregion
@@ -278,7 +298,10 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
         }
     }
 
-    public void SaveConfig<T>(T config) where T : ModuleConfig
+    public void SaveConfig<T>
+    (
+        T config
+    ) where T : ModuleConfig
     {
         try
         {
@@ -293,7 +316,10 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
         }
     }
 
-    protected static void ExportToClipboard<T>(T config) where T : class
+    protected static void ExportToClipboard<T>
+    (
+        T config
+    ) where T : class
     {
         var host = ManagerHost.Current;
 
@@ -347,9 +373,12 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
 
     #region 私有
 
-    private static readonly ConcurrentDictionary<Type, Action<ModuleBase>?> CleanupDelegates = [];
+    private Action<ModuleBase>? cleanupAction;
 
-    private static Action<ModuleBase>? GenerateCleanupDelegate(Type type)
+    private static Action<ModuleBase>? GenerateCleanupDelegate
+    (
+        Type type
+    )
     {
         const BindingFlags FLAGS_ALL = BindingFlags.Instance  |
                                        BindingFlags.NonPublic |
@@ -372,7 +401,13 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
 
         foreach (var field in fields)
         {
-            var fieldExp  = Expression.Field(field.IsStatic ? null : convertedInstance, field);
+            var fieldExp = Expression.Field
+            (
+                field.IsStatic ?
+                    null :
+                    convertedInstance,
+                field
+            );
             var isNotNull = Expression.NotEqual(fieldExp, Expression.Constant(null));
 
             var disposeCall = Expression.Call
