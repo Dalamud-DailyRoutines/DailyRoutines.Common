@@ -1,4 +1,3 @@
-using System.Linq;
 using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Game.ClientState.Keys;
 
@@ -20,5 +19,5 @@ public class ConflictKey
         IGamepadState.Instance().Raw(Gamepad) == 1;
 
     public override string ToString() =>
-        $"{Keyboard} | {Gamepad}";
+        GameState.IsControllerMode ? $"{Gamepad}" : $"{Keyboard}";
 }
