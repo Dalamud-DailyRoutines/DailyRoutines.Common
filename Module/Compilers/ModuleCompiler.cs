@@ -49,6 +49,20 @@ public sealed class ModuleCompiler
         compiledAssemblyCache.Clear();
         loadedAssemblyCache.Clear();
 
+        HashSet<Assembly> retiringAssemblies = [];
+        foreach (var context in loadedContexts)
+            retiringAssemblies.UnionWith(context.Assemblies);
+
+        try
+        {
+            var removedEntries = ModuleSerializationCache.RemoveAssemblies(retiringAssemblies);
+            DLog.Debug($"[ModuleCompiler] 已清理旧模块序列化缓存: {removedEntries}");
+        }
+        catch (Exception ex)
+        {
+            DLog.Error("[ModuleCompiler] 清理旧模块序列化缓存时发生异常", ex);
+        }
+
         var unloadedCount = 0;
 
         while (loadedContexts.TryTake(out var context))
@@ -63,7 +77,10 @@ public sealed class ModuleCompiler
         );
     }
 
-    public Assembly? Load(string code)
+    public Assembly? Load
+    (
+        string code
+    )
     {
         if (string.IsNullOrWhiteSpace(code))
         {
@@ -81,10 +98,15 @@ public sealed class ModuleCompiler
             return null;
         }
 
-        return assemblyBytes.Length > 0 ? Load(assemblyBytes) : null;
+        return assemblyBytes.Length > 0 ?
+                   Load(assemblyBytes) :
+                   null;
     }
 
-    public Assembly? Load(byte[] assembly)
+    public Assembly? Load
+    (
+        byte[] assembly
+    )
     {
         if (assembly.Length == 0)
         {
@@ -99,9 +121,9 @@ public sealed class ModuleCompiler
 
         DLog.Debug
         (
-            ReferenceEquals(cacheEntry, newEntry)
-                ? $"[ModuleCompiler] 未命中程序集加载缓存, 准备创建新的加载任务, 哈希: {shortHash}, 大小: {assembly.Length} 字节"
-                : $"[ModuleCompiler] 命中程序集加载缓存, 哈希: {shortHash}, 大小: {assembly.Length} 字节"
+            ReferenceEquals(cacheEntry, newEntry) ?
+                $"[ModuleCompiler] 未命中程序集加载缓存, 准备创建新的加载任务, 哈希: {shortHash}, 大小: {assembly.Length} 字节" :
+                $"[ModuleCompiler] 命中程序集加载缓存, 哈希: {shortHash}, 大小: {assembly.Length} 字节"
         );
 
         try
@@ -130,7 +152,10 @@ public sealed class ModuleCompiler
         return null;
     }
 
-    public static IReadOnlyList<Type> GetDerivedTypes<T>(Assembly? assembly) where T : class
+    public static IReadOnlyList<Type> GetDerivedTypes<T>
+    (
+        Assembly? assembly
+    ) where T : class
     {
         if (assembly == null)
         {
@@ -181,7 +206,10 @@ public sealed class ModuleCompiler
         return result;
     }
 
-    private byte[] Compile(string sourceCode)
+    private byte[] Compile
+    (
+        string sourceCode
+    )
     {
         var codeHash   = ComputeSHA256Hash(sourceCode);
         var shortHash  = FormatHash(codeHash);
@@ -190,9 +218,9 @@ public sealed class ModuleCompiler
 
         DLog.Debug
         (
-            ReferenceEquals(cacheEntry, newEntry)
-                ? $"[ModuleCompiler] 未命中编译缓存, 开始创建新的编译任务, 源码哈希: {shortHash}, 源码长度: {sourceCode.Length} 字符"
-                : $"[ModuleCompiler] 命中编译缓存, 源码哈希: {shortHash}, 源码长度: {sourceCode.Length} 字符"
+            ReferenceEquals(cacheEntry, newEntry) ?
+                $"[ModuleCompiler] 未命中编译缓存, 开始创建新的编译任务, 源码哈希: {shortHash}, 源码长度: {sourceCode.Length} 字符" :
+                $"[ModuleCompiler] 命中编译缓存, 源码哈希: {shortHash}, 源码长度: {sourceCode.Length} 字符"
         );
 
         try
@@ -209,7 +237,11 @@ public sealed class ModuleCompiler
         }
     }
 
-    private byte[] CompileCore(string sourceCode, string codeHash)
+    private byte[] CompileCore
+    (
+        string sourceCode,
+        string codeHash
+    )
     {
         var startTimestamp = Stopwatch.GetTimestamp();
         var shortHash      = FormatHash(codeHash);
@@ -232,7 +264,11 @@ public sealed class ModuleCompiler
         return assemblyBytes;
     }
 
-    private CSharpCompilation CreateCompilation(string sourceCode, string codeHash)
+    private CSharpCompilation CreateCompilation
+    (
+        string sourceCode,
+        string codeHash
+    )
     {
         var assemblyName  = $"DailyRoutinesModule-{Guid.NewGuid():N}";
         var syntaxTree    = SyntaxFactory.ParseSyntaxTree(SourceText.From(sourceCode, Encoding.UTF8), ParseOptions);
@@ -252,7 +288,11 @@ public sealed class ModuleCompiler
         );
     }
 
-    private static void ThrowCompilationException(EmitResult emitResult, string codeHash)
+    private static void ThrowCompilationException
+    (
+        EmitResult emitResult,
+        string     codeHash
+    )
     {
         var diagnostics = emitResult.Diagnostics
                                     .Where
@@ -269,7 +309,11 @@ public sealed class ModuleCompiler
         throw new InvalidOperationException($"模块编译失败, 共 {diagnostics.Length} 个错误");
     }
 
-    private Assembly? LoadCore(byte[] assembly, string assemblyHash)
+    private Assembly? LoadCore
+    (
+        byte[] assembly,
+        string assemblyHash
+    )
     {
         var startTimestamp    = Stopwatch.GetTimestamp();
         var parentLoadContext = AssemblyLoadContext.GetLoadContext(typeof(ModuleCompiler).Assembly);
@@ -320,9 +364,9 @@ public sealed class ModuleCompiler
 
         DLog.Debug("[ModuleCompiler] 开始构建 Roslyn 引用列表");
 
-        AddReferences(builder, seenFileNames, Path.GetDirectoryName(typeof(object).Assembly.Location), "系统基础程序集目录",           SearchOption.TopDirectoryOnly);
-        AddReferences(builder, seenFileNames, Path.GetDirectoryName(typeof(Form).Assembly.Location),   "Windows Forms 程序集目录", SearchOption.TopDirectoryOnly);
-        AddReferences(builder, seenFileNames, IDalamudPluginInterface.Instance().AssemblyLocation.DirectoryName,   "插件程序集目录",             SearchOption.AllDirectories);
+        AddReferences(builder, seenFileNames, Path.GetDirectoryName(typeof(object).Assembly.Location), "系统基础程序集目录", SearchOption.TopDirectoryOnly);
+        AddReferences(builder, seenFileNames, Path.GetDirectoryName(typeof(Form).Assembly.Location), "Windows Forms 程序集目录", SearchOption.TopDirectoryOnly);
+        AddReferences(builder, seenFileNames, IDalamudPluginInterface.Instance().AssemblyLocation.DirectoryName, "插件程序集目录", SearchOption.AllDirectories);
         AddReferences
         (
             builder,
@@ -388,7 +432,11 @@ public sealed class ModuleCompiler
         );
     }
 
-    private static IEnumerable<string> EnumerateAssemblyFiles(string directory, SearchOption searchOption)
+    private static IEnumerable<string> EnumerateAssemblyFiles
+    (
+        string       directory,
+        SearchOption searchOption
+    )
     {
         foreach (var path in Directory.EnumerateFiles(directory, "*.dll", searchOption))
             yield return path;
@@ -397,7 +445,10 @@ public sealed class ModuleCompiler
             yield return path;
     }
 
-    private static bool IsValidAssembly(string path)
+    private static bool IsValidAssembly
+    (
+        string path
+    )
     {
         try
         {
@@ -422,19 +473,36 @@ public sealed class ModuleCompiler
         }
     }
 
-    private static string ComputeSHA256Hash(string data) =>
+    private static string ComputeSHA256Hash
+    (
+        string data
+    ) =>
         ComputeSHA256Hash(Encoding.UTF8.GetBytes(data));
 
-    private static string ComputeSHA256Hash(byte[] data) =>
+    private static string ComputeSHA256Hash
+    (
+        byte[] data
+    ) =>
         ComputeSHA256Hash(data.AsSpan());
 
-    private static string ComputeSHA256Hash(ReadOnlySpan<byte> data) =>
+    private static string ComputeSHA256Hash
+    (
+        ReadOnlySpan<byte> data
+    ) =>
         Convert.ToHexString(SHA256.HashData(data));
 
-    private static string FormatHash(string hash) =>
-        hash.Length <= 12 ? hash : hash[..12];
+    private static string FormatHash
+    (
+        string hash
+    ) =>
+        hash.Length <= 12 ?
+            hash :
+            hash[..12];
 
-    private static string FormatDiagnostic(Diagnostic diagnostic)
+    private static string FormatDiagnostic
+    (
+        Diagnostic diagnostic
+    )
     {
         var lineSpan = diagnostic.Location.GetLineSpan();
         if (!lineSpan.IsValid)
@@ -446,7 +514,10 @@ public sealed class ModuleCompiler
         return $"{diagnostic.Id}, 位置: 第 {line} 行, 第 {column} 列, 消息: {diagnostic.GetMessage()}";
     }
 
-    private static void TryUnloadContext(ModuleLoadContext context)
+    private static void TryUnloadContext
+    (
+        ModuleLoadContext context
+    )
     {
         var contextName = context.Name ?? "<未命名>";
         DLog.Verbose($"[ModuleCompiler] 开始卸载动态程序集上下文: {contextName}");
