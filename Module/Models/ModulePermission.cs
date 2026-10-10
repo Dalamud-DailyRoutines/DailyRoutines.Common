@@ -1,5 +1,3 @@
-using OmenTools.OmenService;
-
 namespace DailyRoutines.Common.Module.Models;
 
 public sealed class ModulePermission
@@ -31,30 +29,30 @@ public sealed class ModulePermission
 
     /// <summary>
     ///     在全部客户端上需要测试码, 无测试码则会显示为禁用状态 <br />
-    ///     若为真则会无视 <see cref="CNPremium" />、<see cref="GLPremium" />、<see cref="TCPremium" />、
-    ///     <see cref="KRPremium" /> 的设置
+    ///     若为真则会无视 <see cref="CNTester" />、<see cref="GLTester" />、<see cref="TCTester" />、
+    ///     <see cref="KRTester" /> 的设置
     /// </summary>
-    public bool AllPremium { get; init; }
-    
+    public bool AllTester { get; init; }
+
     /// <summary>
     ///     在国服客户端上需要测试码, 无测试码则会显示为禁用状态
     /// </summary>
-    public bool CNPremium { get; init; }
+    public bool CNTester { get; init; }
 
     /// <summary>
     ///     在国际服客户端上需要测试码, 无测试码则会显示为禁用状态
     /// </summary>
-    public bool GLPremium { get; init; }
+    public bool GLTester { get; init; }
 
     /// <summary>
     ///     在繁中客户端上需要测试码, 无测试码则会显示为禁用状态
     /// </summary>
-    public bool TCPremium { get; init; }
+    public bool TCTester { get; init; }
 
     /// <summary>
     ///     在韩服客户端上需要测试码, 无测试码则会显示为禁用状态
     /// </summary>
-    public bool KRPremium { get; init; }
+    public bool KRTester { get; init; }
 
     /// <summary>
     ///     在所有客户端上均默认启用 <br />
@@ -104,18 +102,22 @@ public sealed class ModulePermission
     }
 
     // 是否有使用的权限, 主要判断模块权限
-    public bool IsHide(bool isAuth, bool isPremium)
+    public bool IsHide
+    (
+        bool isAuth,
+        bool isTester
+    )
     {
 #if DEBUG
         return false;
 #elif RELEASE
         var condition0 = IsSkip();
-        var condition1 = NeedAuth   && !isAuth;
-        var condition2 = CNPremium  && GameState.IsCN && !isPremium;
-        var condition3 = GLPremium  && GameState.IsGL && !isPremium;
-        var condition4 = TCPremium  && GameState.IsTC && !isPremium;
-        var condition5 = KRPremium  && GameState.IsKR && !isPremium;
-        var condition6 = AllPremium && !isPremium;
+        var condition1 = NeedAuth  && !isAuth;
+        var condition2 = CNTester  && GameState.IsCN && !isTester;
+        var condition3 = GLTester  && GameState.IsGL && !isTester;
+        var condition4 = TCTester  && GameState.IsTC && !isTester;
+        var condition5 = KRTester  && GameState.IsKR && !isTester;
+        var condition6 = AllTester && !isTester;
 
         return condition0 || condition1 || condition6 || condition2 || condition3 || condition4 || condition5;
 #else
@@ -130,7 +132,7 @@ public sealed class ModulePermission
             return true;
 
         var isDefaultEnabled = false;
-        
+
         if (GameState.IsCN && CNDefaultEnabled)
             isDefaultEnabled = true;
 
