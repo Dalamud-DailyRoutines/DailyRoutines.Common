@@ -30,6 +30,13 @@ public sealed class ModulePermission
     public bool GLOnly { get; init; }
 
     /// <summary>
+    ///     在全部客户端上需要测试码, 无测试码则会显示为禁用状态 <br />
+    ///     若为真则会无视 <see cref="CNPremium" />、<see cref="GLPremium" />、<see cref="TCPremium" />、
+    ///     <see cref="KRPremium" /> 的设置
+    /// </summary>
+    public bool AllPremium { get; init; }
+    
+    /// <summary>
     ///     在国服客户端上需要测试码, 无测试码则会显示为禁用状态
     /// </summary>
     public bool CNPremium { get; init; }
@@ -103,13 +110,14 @@ public sealed class ModulePermission
         return false;
 #elif RELEASE
         var condition0 = IsSkip();
-        var condition1 = NeedAuth  && !isAuth;
-        var condition2 = CNPremium && GameState.IsCN && !isPremium;
-        var condition3 = GLPremium && GameState.IsGL && !isPremium;
-        var condition4 = TCPremium && GameState.IsTC && !isPremium;
-        var condition5 = KRPremium && GameState.IsKR && !isPremium;
+        var condition1 = NeedAuth   && !isAuth;
+        var condition2 = CNPremium  && GameState.IsCN && !isPremium;
+        var condition3 = GLPremium  && GameState.IsGL && !isPremium;
+        var condition4 = TCPremium  && GameState.IsTC && !isPremium;
+        var condition5 = KRPremium  && GameState.IsKR && !isPremium;
+        var condition6 = AllPremium && !isPremium;
 
-        return condition0 || condition1 || condition2 || condition3 || condition4 || condition5;
+        return condition0 || condition1 || condition6 || condition2 || condition3 || condition4 || condition5;
 #else
         return true;
 #endif
