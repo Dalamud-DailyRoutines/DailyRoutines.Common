@@ -69,6 +69,15 @@
           "Microsoft.CodeAnalysis.Analyzers": "5.9.0-1.26328.17"
         }
       },
+      "ffxivclientstructs.expansion": {
+        "type": "Project",
+        "dependencies": {
+          "FFXIVClientStructs.Expansion.Runtime": "[1.0.0, )"
+        }
+      },
+      "ffxivclientstructs.expansion.runtime": {
+        "type": "Project"
+      },
       "kamitoolkit": {
         "type": "Project"
       },
@@ -76,6 +85,7 @@
         "type": "Project",
         "dependencies": {
           "AngleSharp": "[1.8.0, )",
+          "FFXIVClientStructs.Expansion": "[1.0.0, )",
           "GuerrillaNtp": "[3.1.0, )",
           "Markdig": "[0.43.0, )",
           "MessageFormat": "[8.0.0, )",
