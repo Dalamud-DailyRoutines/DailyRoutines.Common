@@ -26,14 +26,14 @@ public abstract class ModuleBase : IEquatable<ModuleBase>
 
     #region 暴露信息
 
-    public string           ModuleName       { get; private set; }
-    public List<ModuleBase> PrecedingModules { get; set; }
-    public List<ModuleBase> PairModules      { get; set; }
-    public List<ModuleBase> ConflictModules  { get; set; }
-    public bool             WithConfigUI     { get; private set; }
-    public bool             WithConfig       { get; private set; }
-    public string           ModuleIdentifier { get; set; }
-    public string           ModuleGUID       { get; init; }
+    public virtual string           ModuleName       { get; }
+    public         List<ModuleBase> PrecedingModules { get; set; }
+    public         List<ModuleBase> PairModules      { get; set; }
+    public         List<ModuleBase> ConflictModules  { get; set; }
+    public         bool             WithConfigUI     { get; private set; }
+    public         bool             WithConfig       { get; private set; }
+    public         string           ModuleIdentifier { get; set; }
+    public         string           ModuleGUID       { get; init; }
 
     #endregion
 
