@@ -213,12 +213,12 @@ public abstract class DataUploaderBase
 
     #endregion
     
-    protected static readonly Throttler<string> Throttler = new();
-    
+    protected readonly Throttler<string> Throttler = new();
+
     protected static bool IsPlayerReady() =>
-        GameState.IsLoggedIn                                &&
-        IObjectTable.Instance().LocalPlayer != null &&
-        !ICondition.Instance().IsBoundByDuty;
+        GameState.IsLoggedIn                     &&
+        LocalPlayerState.Object          != null &&
+        GameState.ContentFinderCondition == 0;
 
     #region 常量
 
