@@ -29,6 +29,7 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
         <PackageReference Include="TimeAgo.Core" Version="1.2.0" />
         <PackageReference Include="TinyPinyin" Version="1.1.0" />
+        <PackageReference Update="DotNet.ReproducibleBuilds" Version="2.0.5" />
     </ItemGroup>
 
     <ItemGroup>
